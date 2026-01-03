@@ -14,6 +14,17 @@ struct ContentView: View {
     
     let tipPercentages = [10, 15, 20, 25, 0]
     
+    var totalPerPerson: Double {
+        let peopleCount = Double(numberOfPeople + 2)
+        let tipSelection = Double(tipPercentage)
+        
+        let tipValue = checkAmount / 100 // сума чайових
+        let grandTotal = checkAmount + tipValue // загальна сума з чайовими
+        let amountPerPerson = grandTotal / peopleCount // фінальна сума на особу/осіб
+        
+        return amountPerPerson
+    }
+    
     var body: some View {
         NavigationStack {
             Form {
@@ -39,7 +50,7 @@ struct ContentView: View {
                 }
                 
                 Section {
-                    Text(checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "UDS"))
+                    Text(totalPerPerson, format: .currency(code: Locale.current.currency?.identifier ?? "UDS"))
                 }
                 .navigationTitle("WeSplit")
             }
