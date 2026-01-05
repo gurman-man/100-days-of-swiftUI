@@ -13,18 +13,20 @@ struct ContentView: View {
     @State private var tipPercentage = 20
     @FocusState private var amountIsFocused: Bool
     
-    let tipPercentages = [10, 15, 20, 25, 0]
+    // let tipPercentages = [10, 15, 20, 25, 0]
+    
+    // Challenge 2
+    var totalAmount: Double {
+        let tipSelection = Double(tipPercentage)
+        let tipValue = checkAmount / 100 * tipSelection     // сума чайових
+        return checkAmount + tipValue                       // загальна сума з чайовими
+    }
     
     var totalPerPerson: Double {
         let peopleCount = Double(numberOfPeople + 2)
-        let tipSelection = Double(tipPercentage)
-        
-        let tipValue = checkAmount / 100 * tipSelection     // сума чайових
-        let grandTotal = checkAmount + tipValue             // загальна сума з чайовими
-        let amountPerPerson = grandTotal / peopleCount      // фінальна сума на особу/осіб
-        
-        return amountPerPerson
+        return totalAmount / peopleCount      // фінальна сума на особу/осіб
     }
+    
     
     var body: some View {
         NavigationStack {
@@ -39,27 +41,34 @@ struct ContentView: View {
                             Text("\($0) people")
                         }
                     }
-                    .pickerStyle(.navigationLink)
+                    .pickerStyle(.automatic)
                 }
                 
                 Section("How much do you want to tip?") {
+                    // Challenge 3
                     Picker("Tip percentage", selection: $tipPercentage) {
-                        ForEach(tipPercentages, id: \.self) {
+                        ForEach(0..<101) {
                             Text($0, format: .percent)
                         }
                     }
-                    .pickerStyle(.segmented)
+                    .pickerStyle(.navigationLink)
                 }
                 
-                Section {
-                    Text(totalPerPerson, format: .currency(code: Locale.current.currency?.identifier ?? "UDS"))
+                // Challenge 1
+                Section("Amount per person"){
+                    Text(totalPerPerson, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                 }
-                .navigationTitle("WeSplit")
-                .toolbar {
-                    if amountIsFocused {
-                        Button("Done") {
-                            amountIsFocused = false
-                        }
+                
+                // Challenge 2
+                Section("Total amount") {
+                    Text(totalAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                }
+            }
+            .navigationTitle("WeSplit")
+            .toolbar {
+                if amountIsFocused {
+                    Button("Done") {
+                        amountIsFocused = false
                     }
                 }
             }
