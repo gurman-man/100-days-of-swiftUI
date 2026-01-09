@@ -9,16 +9,27 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        LinearGradient(colors: [.white, .black], startPoint: .top, endPoint: .bottom)
+        Button("Button1") {}
+            .buttonStyle(.bordered)
         
-        RadialGradient(colors: [.blue, .black], center: .center, startRadius: 20, endRadius: 200)
+        Button("Button2", role: .destructive) {}
+            .buttonStyle(.bordered)
         
-        AngularGradient(colors: [.red, .yellow, .green, .blue, .purple, .red], center: .center)
+        Button("Button3") {}
+            .buttonStyle(.borderedProminent)
         
-        Text("Your Content")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .foregroundStyle(.white)
-            .background(.indigo.gradient)
+        Button("Button4", role: .destructive) {}
+            .buttonStyle(.borderedProminent)
+        
+        Image(systemName: "pencil.circle")
+            .padding(50)
+            .font(.largeTitle)
+            .foregroundStyle(.orange)
+    }
+    
+    
+    func executeDelete() {
+        print("Now deleting…")
     }
 }
 
