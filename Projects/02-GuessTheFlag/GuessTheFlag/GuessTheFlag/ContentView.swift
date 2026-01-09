@@ -8,28 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var showingAlert = false
+    
     var body: some View {
-        Button("Button1") {}
-            .buttonStyle(.bordered)
-        
-        Button("Button2", role: .destructive) {}
-            .buttonStyle(.bordered)
-        
-        Button("Button3") {}
-            .buttonStyle(.borderedProminent)
-        
-        Button("Button4", role: .destructive) {}
-            .buttonStyle(.borderedProminent)
-        
-        Image(systemName: "pencil.circle")
-            .padding(50)
-            .font(.largeTitle)
-            .foregroundStyle(.orange)
-    }
-    
-    
-    func executeDelete() {
-        print("Now deleting…")
+        Button("Show alert") {
+            showingAlert = true
+        }
+        .alert("Important message", isPresented: $showingAlert) {
+            Button("Delete", role: .destructive) { }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Please read this.")
+        }
     }
 }
 
