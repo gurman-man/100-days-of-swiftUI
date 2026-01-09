@@ -8,18 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var showingAlert = false
     
     var body: some View {
-        Button("Show alert") {
-            showingAlert = true
+        VStack {
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+            Text("Hello, world!")
         }
-        .alert("Important message", isPresented: $showingAlert) {
-            Button("Delete", role: .destructive) { }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("Please read this.")
-        }
+        .padding()
     }
 }
 
