@@ -5,6 +5,16 @@
 //  Created by mac on 08.01.2026.
 //
 
+// MARK: - Challenges
+/*
+    1. Add an @State property to store the user’s score, modify it when they get an answer right or wrong, then display it in the alert and in the score label.
+ 
+    2. When someone chooses the wrong flag, tell them their mistake in your alert message – something like “Wrong! That’s the flag of France,” for example.
+ 
+    3. Make the game show only 8 questions, at which point they see a final alert judging their score and can restart the game
+ */
+
+// MARK: - Implementation
 import SwiftUI
 
 struct ContentView: View {
@@ -13,6 +23,10 @@ struct ContentView: View {
     
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var score = 0
+    
+    @State private var questionCounter = 0
+    @State private var gameOver = false
     
     var body: some View {
         ZStack {
@@ -28,7 +42,7 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 
-                Text("Guees the Flag")
+                Text("Guess the Flag")
                     .font(.largeTitle.bold())
                     .foregroundStyle(.black)
                 
@@ -60,8 +74,8 @@ struct ContentView: View {
                 
                 Spacer()
                 Spacer()
-                
-                Text("Score: ???")
+                // Challenge 1
+                Text("Score: \(score)")
                     .foregroundStyle(.black)
                     .font(.title.bold())
                 
@@ -72,21 +86,51 @@ struct ContentView: View {
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         } message: {
-            Text("Your score is ???")
-        }
-    }
-    
-    func flagTapped(_ number: Int) {
-        if number == correctAnswer {
-            scoreTitle = "Correct"
-        } else {
-            scoreTitle = "Wrong"
+            // Challenge 1
+            Text("Your score is \(score)")
         }
         
-        showingScore = true
+        // Challenge 3
+        .alert("Game Over!", isPresented: $gameOver) {
+            Button("Restart Game", action: resetGame)
+        } message: {
+            Text("Your final score is \(score)")
+        }
     }
     
+    
+    func flagTapped(_ number: Int) {
+        // Challenge 1
+        if number == correctAnswer {
+            scoreTitle = "Correct"
+            score += 1
+        } else {
+            // Challenge 2
+            scoreTitle = "Wrong! That's the flag of \(countries[number])"
+            score -= 1
+        }
+        
+        // Challenge 3
+        questionCounter += 1
+        
+        if questionCounter == 8 {
+            gameOver = true
+        } else {
+            showingScore = true
+        }
+    }
+    
+    //  Підготовка нового раунду гри
     func askQuestion() {
+        countries.shuffle()
+        correctAnswer = Int.random(in: 0...2)
+    }
+    
+    
+    // Challenge 3
+    func resetGame() {
+        score = 0
+        questionCounter = 0
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
     }
