@@ -12,10 +12,26 @@
     2. When someone chooses the wrong flag, tell them their mistake in your alert message – something like “Wrong! That’s the flag of France,” for example.
  
     3. Make the game show only 8 questions, at which point they see a final alert judging their score and can restart the game
+ 
+ 
+Day 24: Challenge 2
+ 
+    2. Go back to project 2 and replace the Image view used for flags with a new FlagImage() view that renders one flag image using the specific set of modifiers we had.
  */
 
 // MARK: - Implementation
 import SwiftUI
+
+// Challenge 2 from Day 24
+struct FlagImage: View {
+    var name: String
+    
+    var body: some View {
+        Image(name)
+            .clipShape(.rect(cornerRadius: 10))
+            .shadow(radius: 5)
+    }
+}
 
 struct ContentView: View {
     @State var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "UK", "Ukraine", "US"].shuffled()
@@ -60,9 +76,8 @@ struct ContentView: View {
                         Button {
                             flagTapped(number)
                         } label: {
-                            Image(countries[number])
-                                .clipShape(.rect(cornerRadius: 10))
-                                .shadow(radius: 5)
+                            // Challenge 2 from Day 24
+                            FlagImage(name: countries[number])
                         }
                         
                     }

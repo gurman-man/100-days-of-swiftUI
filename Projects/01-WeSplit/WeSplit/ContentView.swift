@@ -62,6 +62,8 @@ struct ContentView: View {
                 // Challenge 2
                 Section("Total amount") {
                     Text(totalAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    // Challenge 1 from Day 24
+                        .foregroundStyle(tipPercentage == 0 ? .red : .primary)
                 }
             }
             .navigationTitle("WeSplit")
