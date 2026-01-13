@@ -7,18 +7,7 @@
 
 import SwiftUI
 
-struct Title: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .font(.largeTitle)
-            .foregroundStyle(.white)
-            .padding()
-            .background(.blue)
-            .clipShape(.rect(cornerRadius: 10))
-        
-    }
-}
-
+// MARK: - View Composition
 struct CapsuleText: View {
     var text: String
     
@@ -31,6 +20,19 @@ struct CapsuleText: View {
     }
 }
 
+// MARK: - Custom modifier
+struct Title: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.largeTitle)
+            .foregroundStyle(.white)
+            .padding()
+            .background(.blue)
+            .clipShape(.rect(cornerRadius: 10))
+        
+    }
+}
+
 // Використання розширення щоб легко використовувати custom modifiers
 extension View {
     func titleStyle() -> some View {
@@ -38,6 +40,7 @@ extension View {
     }
 }
 
+// MARK:  - Advanced modifier
 struct Watermark: ViewModifier {
     var text: String
     
@@ -45,6 +48,7 @@ struct Watermark: ViewModifier {
         ZStack(alignment: .bottomTrailing) {
             content
             
+            // Стилізація Watermark
             Text(text)
                 .font(.caption)
                 .foregroundStyle(.white)
@@ -54,12 +58,15 @@ struct Watermark: ViewModifier {
     }
 }
 
+// Розширення для advanced modifier
 extension View {
     func watermarked(with text: String) -> some View {
         modifier(Watermark(text: text))
     }
 }
 
+
+// MARK:  - Main Content
 struct ContentView: View {
     var body: some View {
         VStack(spacing: 10) {
