@@ -9,12 +9,166 @@ import SwiftUI
 
 struct ContentView: View {
     
-    var possibleMoves = ["Rock", "Paper", "Scissors"]
+    // MARK: - Game State
+    @State private var possibleMoves = ["✊", "✋", "✌️"]
+    @State private var score = 0
+    @State private var round = 0
     
-    var body: some View {
-        VStack {
+    @State private var userAnsweredCorrectly = false
+    @State private var showingFinalScore = false        // Контроль відображення фінального Alert
+    
+    @State private var shouldWin = true
+    @State private var computerChoice = Int.random(in: 0..<3)
+    
+    // MARK: - Subviews
+    
+    /// Кастомний стиль для відображення статистики (Раунд та Рахунок)
+    struct CustomSyle: View {
+        var text: String
+        
+        var body: some View {
+            Text(text)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .font(.system(size: 20, weight: .medium))
+                .foregroundStyle(.white)
         }
-        .padding()
+    }
+    
+    /// Текст інструкції, який динамічно змінює колір та світіння залежно від умови
+    var instructionView: some View {
+        Text(shouldWin ? "WIN" : "LOSE")
+            .font(.largeTitle)
+            .fontWeight(.heavy)
+            .foregroundStyle(shouldWin ? .green : .red)
+            .shadow(color: shouldWin ? .green.opacity(0.5) : .red.opacity(0.5), radius: 15)
+    }
+    
+    // MARK: - Main Layout
+    var body: some View {
+        ZStack {
+            LinearGradient(colors: [.black, .indigo, .black], startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+            
+            VStack (spacing: 30){
+                Spacer()
+                
+                // Заголовок
+                Text("Rock Paper Scissors")
+                    .font(.title)
+                    .fontWeight(.black)
+                    .foregroundStyle(.white)
+                    .shadow(color: .yellow, radius: 7)
+                    
+                Spacer()
+                
+                // Картка комп'ютера
+                HStack(spacing: 15) {
+                    Text("COMPUTER CHOSE")
+                        .foregroundStyle(.white)
+                        .font(.system(size: 25))
+                        .fontWeight(.heavy)
+                    
+                    Text(possibleMoves[computerChoice])
+                        .font(.system(size: 30))
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 25))
+                .padding(.horizontal)
+                
+                // Інструкція
+                VStack(spacing: 5) {
+                    Text("YOU MUST")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.white.opacity(0.6))
+                    instructionView
+                }
+                
+                // Кнопки
+                HStack() {
+                    ForEach(0..<3) { number in
+                        Button {
+                            playGame(playerChoice: number)
+                        } label: {
+                            Text(possibleMoves[number])
+                                .font(.system(size: 80))
+                                .padding()
+                                .background(.white.opacity(0.1))
+                                .clipShape(Circle())
+                        }
+                    }
+                }
+                
+                Spacer()
+                
+                // Статистика
+                HStack(spacing: 15) {
+                    
+                    CustomSyle(text: "Round: \(round)/10")
+                        .animation(.default, value: round)
+                    CustomSyle(text: "Score: \(score)")
+                        .animation(.default, value: score)
+                }
+                
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 30)
+        }
+        // Cповіщення
+        .alert("Game Over", isPresented: $showingFinalScore) {
+            Button("Play Again", action: resetGame)
+        } message: {
+            Text("Your final score is \(score)")
+        }
+    }
+    
+    // MARK: - Game Logic (Логіка гри)
+    
+    /// Основна функція обробки ходу
+    func playGame(playerChoice: Int) {
+        let userWonRound = (computerChoice + 1) % 3 == playerChoice
+        let userLostRound = (playerChoice + 1) % 3 == computerChoice
+        
+        // 1. Головна умова: що ми мали зробити?
+        if shouldWin {
+            if userWonRound {
+                score += 1
+            } else {
+                score -= 1
+            }
+        } else {
+            if userLostRound {
+                score += 1
+            } else {
+                score -= 1
+            }
+        }
+        
+        // 2. Перевірка на завершення гри
+        if round == 9 {
+            showingFinalScore = true
+        } else {
+            advanceRound()
+        }
+    }
+    
+    /// Підготовка до наступного ходу
+    func advanceRound() {
+        computerChoice = Int.random(in: 0..<3)
+        shouldWin.toggle()
+        round += 1
+    }
+    
+    /// Повне скидання гри до початкового стану
+    func resetGame() {
+        score = 0
+        round = 0
+        advanceRound()
     }
 }
 
