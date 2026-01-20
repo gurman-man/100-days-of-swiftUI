@@ -8,11 +8,11 @@
 ---
 
 ## Functionality 🧩
-- 💰 **Currency Formatting** - Automatically detects and applies the local currency symbol (UAH, USD, etc.) based on regional settings.
-- 👥 **Split Logic** — Flexible selection of the number of people to split the bill, powered by an intuitive picker. 
-- 📈 **Custom Tips** — Allows users to select any tip percentage from 0% to 100% via a dedicated Navigation Link. 
-- 🔢 **Grand Total** — Real-time calculation and display of the final amount including tips.
-- ⌨️ **Smart Keyboard** — Implements FocusState to easily dismiss the decimal pad using a "Done" button.
+- 💰 **Currency Formatting**: automatic symbol detection (UAH, USD, etc.) based on system region.
+- 👥 **Split Logic**: intuitive picker to divide the bill among multiple people. 
+- 📈 **Custom Tips**: full range (0–100%) selection via a dedicated Navigation Link.
+- 🔢 **Grand Total**: real-time calculation of the grand total and amount per person.
+- ⌨️ **Smart Keyboard** — keyboard management using FocusState with a "Done" button.
 
 ---
 
