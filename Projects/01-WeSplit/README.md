@@ -1,6 +1,6 @@
 # WeSplit 🧾
 
-[Project 1](https://www.hackingwithswift.com/100/swiftui/16) from the [100 Days of SwiftUI course](https://www.hackingwithswift.com/books/ios-swiftui) by [Hacking With Swift](https://www.hackingwithswift.com/).
+*[Project 1](https://www.hackingwithswift.com/100/swiftui/16)* from the *[100 Days of SwiftUI course](https://www.hackingwithswift.com/books/ios-swiftui)* by *[Hacking With Swift](https://www.hackingwithswift.com/)*
 
 >A clean and efficient check-splitting app designed for seamless expense sharing. It automatically handles tip calculations, formats currency based on the user's locale, and provides an instant breakdown of the total cost per person.
 >
@@ -8,11 +8,11 @@
 ---
 
 ## Functionality 🧩
-- 💰 **Currency Formatting**: automatic symbol detection (UAH, USD, etc.) based on system region.
-- 👥 **Split Logic**: intuitive picker to divide the bill among multiple people. 
-- 📈 **Custom Tips**: full range (0–100%) selection via a dedicated Navigation Link.
-- 🔢 **Grand Total**: real-time calculation of the grand total and amount per person.
-- ⌨️ **Smart Keyboard** — keyboard management using FocusState with a "Done" button.
+- 💰 Automatic local currency formatting (Locale-aware)
+- 👥 Dynamic bill splitting with user-friendly picker
+- 📈 Custom tip selection (0–100%) via separate navigation screen
+- 🔢 Real-time calculation of total and per-person amounts
+- ⌨️ Smart keyboard management using FocusState
 
 ---
 
@@ -26,23 +26,36 @@
 
 ---
 
-## Lesson Overview / Implementation / Challenges
+## Progress 
 
-| Day | Contents |
-|:---:|:---|
-| [16](https://www.hackingwithswift.com/100/swiftui/16) | <ul><li>[Overview](https://www.hackingwithswift.com/100/swiftui/16)</li></ul> |
-| [17](https://www.hackingwithswift.com/100/swiftui/17) | <ul><li>[Implementation](https://www.hackingwithswift.com/100/swiftui/17)</li></ul> |
-| [18](https://www.hackingwithswift.com/100/swiftui/18) | <ul><li>[Challenges](https://www.hackingwithswift.com/100/swiftui/18)</li></ul> |
+<div align="center">
+  
+**Day 16**
+
+*[Overview](https://www.hackingwithswift.com/100/swiftui/16)*
+
+**Day 17**
+
+*[Implementation](https://www.hackingwithswift.com/100/swiftui/17)*
+
+**Day 18**
+
+*[Challenges](https://www.hackingwithswift.com/100/swiftui/18)*
+
+</div>
 
 ---
 
-## Challenge Instructions
+## Challenges
 
-*Instructions taken from [here](https://www.hackingwithswift.com/books/ios-swiftui/wesplit-wrap-up).* 
+*Instructions taken from [here](https://www.hackingwithswift.com/books/ios-swiftui/wesplit-wrap-up)*
 
->1. Add a header to the third section, saying “Amount per person”
->2. Add another section showing the total amount for the check – i.e., the original amount plus tip value, without dividing by the number of people.
->3. Change the tip percentage picker to show a new screen rather than using a segmented control, and give it a wider range of options – everything from 0% to 100%. Tip: use the range `0..<101` for your range rather than a fixed array.
+| <div align="center">Challenge</div> | <div align="center">Status</div> |
+|:---|:---:|
+| 1. Add a header to the third section, saying “Amount per person”. | ✅ |
+| 2. Add another section showing the total amount for the check – i.e., the original amount plus tip value, without dividing by the number of people. | ✅ |
+| 3. Change the tip percentage picker to show a new screen rather than using a segmented control, and give it a wider range of options – everything from 0% to 100%. Tip: use the range `0..<101` for your range rather than a fixed array. | ✅ |
+
 ---
 
 ## Installation
