@@ -5,6 +5,17 @@
 //  Created by mac on 21.01.2026.
 //
 
+// MARK: - Challenges - Day28
+
+/*
+    1. Replace each VStack in our form with a Section, where the text view is the title of the section. Do you prefer this layout or the VStack layout? It’s your app – you choose!
+ 
+    2. Replace the “Number of cups” stepper with a Picker showing the same range of values.
+ 
+    3. Change the user interface so that it always shows their recommended bedtime using a nice and large font. You should be able to remove the “Calculate” button entirely.
+ */
+
+// MARK: - Implementation
 import CoreML
 import SwiftUI
 
@@ -16,6 +27,7 @@ struct ContentView: View {
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var showingAlert = false
+    @State private var recommendLabel = ""
     
     // Встановлюємо стандартний час пробудження (8:00 AM) замість поточного час
     static var defaultWakeTime: Date {
@@ -27,33 +39,47 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
+            // Challenge 1
             Form {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("When do you want to wake up?")
-                        .font(.headline)
-                    
+                Section("When do you want to wake up?") {
                     DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.wheel)
                         .labelsHidden()
                 }
                 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Desired amount of sleep")
-                        .font(.headline)
-                    
+                Section("Desired amount of sleep") {
                     Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
+                        .padding()
                 }
                 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Daily coffee intake")
-                        .font(.headline)
-                    
-                    Stepper("^[\(coffeeAmount) cup](inflect: true)", value: $coffeeAmount, in: 1...20)
+                // Challenge 2
+                Section("Daily coffee intake") {
+                    Picker("Daily coffee intake", selection: $coffeeAmount) {
+                        ForEach(0..<21) {
+                            Text("^[\($0) cup](inflect: true)")
+                        }
+                    }
+                    .pickerStyle(.automatic)
+                    .padding(.vertical, 5)
+                }
+                
+                // Challenge 3
+                Section("Recommended bedtime") {
+                    HStack (alignment: .center) {
+                        Button("Calculate", action: calculateBedtime)
+                            .buttonStyle(.borderless)
+                        
+                        Spacer()
+                        
+                        Text(alertMessage.isEmpty ? "___" : alertMessage)
+                            .font(.title3.weight(.light))
+                            .shadow(color: .orange, radius: 5)
+                            .italic()
+                    }
+                    .padding(.vertical, 10)
                 }
             }
             .navigationTitle("BetterRest")
-            .toolbar {
-                Button("Calculate", action: calculateBedtime)
-            }
             .alert(alertTitle, isPresented: $showingAlert) {
                 Button("OK") { }
             } message: {
@@ -88,7 +114,7 @@ struct ContentView: View {
             alertTitle = "Error"
             alertMessage = "Sorry, there was a problem calculating your bedtime."
         }
-        showingAlert = true
+        showingAlert = false
     }
 }
 
