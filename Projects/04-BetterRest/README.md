@@ -9,11 +9,11 @@ The app uses a CoreML machine learning model to generate personalized sleep reco
 ---
 
 ## Functionality 🧩
-🧠 CoreML-powered sleep prediction
-⏰ Wake-up time input via `DatePicker`
-😴 Adjustable sleep duration (4–12h)
-☕ Coffee intake tracking with `Picker`
-🧾 Clean `Form` + `Section` based UI layout
+- 🧠 CoreML-powered sleep prediction
+- ⏰ Wake-up time input via `DatePicker`
+- 😴 Adjustable sleep duration (4–12h)
+- ☕ Coffee intake tracking with `Picker`
+- 🧾 Clean `Form` + `Section` based UI layout
 
 ---
 
