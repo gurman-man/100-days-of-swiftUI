@@ -3,18 +3,17 @@
 *[Project 4](https://www.hackingwithswift.com/100/swiftui/26)* from the *[100 Days of SwiftUI course](https://www.hackingwithswift.com/books/ios-swiftui)* by *[Hacking With Swift](https://www.hackingwithswift.com/)*
 
 >A smart sleep assistant app that calculates the ideal bedtime based on wake-up time, desired sleep duration, and daily coffee intake.
-
 The app uses a CoreML machine learning model to generate personalized sleep recommendations through a clean and intuitive SwiftUI interface.
 >
 
 ---
 
 ## Functionality 🧩
-- 🧠 CoreML-powered sleep prediction
-- ⏰ Wake-up time input via `DatePicker`
-- 😴 Adjustable sleep duration (4–12h)
-- ☕ Coffee intake tracking with `Picker`
-- 🧾 Clean `Form` + `Section` based UI layout
+🧠 CoreML-powered sleep prediction
+⏰ Wake-up time input via `DatePicker`
+😴 Adjustable sleep duration (4–12h)
+☕ Coffee intake tracking with `Picker`
+🧾 Clean `Form` + `Section` based UI layout
 
 ---
 
@@ -53,9 +52,9 @@ The app uses a CoreML machine learning model to generate personalized sleep reco
 
 | <div align="center">Challenge</div> | <div align="center">Status</div> |
 |:---|:---:|
-| 1. Add a header to the third section, saying “Amount per person”. | ✅ |
-| 2. Add another section showing the total amount for the check – i.e., the original amount plus tip value, without dividing by the number of people. | ✅ |
-| 3. Change the tip percentage picker to show a new screen rather than using a segmented control, and give it a wider range of options – everything from 0% to 100%. Tip: use the range `0..<101` for your range rather than a fixed array. | ✅ |
+| 1. Replace each `VStack` in our form with a `Section`, where the text view is the title of the section. Do you prefer this layout or the `VStack` layout? It’s your app – you choose! | ✅ |
+| 2. Replace the “Number of cups” stepper with a `Picker` showing the same range of values. | ✅ |
+| 3. Change the user interface so that it always shows their recommended bedtime using a nice and large font. You should be able to remove the “Calculate” button entirely. | ✅ |
 
 ---
 
