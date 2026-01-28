@@ -18,13 +18,17 @@ struct ContentView: View {
         }
     }
     
-    func testBundles() {
-        if let fileURL = Bundle.main.url(forResource: "some-file", withExtension: "txt") {
-            
-            if let fileContents = try? String(contentsOf: fileURL, encoding: .utf8) {
-                // we loaded the file into a string!
-            }
-        }
+    func testStrings() {
+        let word = "swift"
+        let checker = UITextChecker()
+        let range = NSRange(location: 0, length: word.utf16.count)
+        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+        
+        let allGood = misspelledRange.location == NSNotFound
+        
+        let letters = word.components(separatedBy: "\n") // Розбиває один довгий рядок на масив
+        let letter = letters.randomElement() // Повертає випадковий елемент
+        let trimmed = letter?.trimmingCharacters(in: .whitespacesAndNewlines) // Видаляє зайві символи
     }
 }
 
