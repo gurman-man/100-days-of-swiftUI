@@ -8,30 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
-    let people = ["Finn", "Leia", "Luke", "Rey"]
-    
     var body: some View {
-        List {
-            Section("Section 1") {
-                Text("Static Row 1")
-                Text("Static Row 2")
-            }
+        VStack {
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
             
-            Section("Section 2") {
-                ForEach(0..<5) {
-                    Text("Dynamic Row\($0)")
-                }
-            }
-            
-            Section("Section 3") {
-                Text("Static Row 3")
-                Text("Static Row 4")
-            }
+            Text("Hello, world!")
         }
-        .listStyle(.grouped)
-        
-        List(people, id: \.self) {
-            Text($0)
+    }
+    
+    func testBundles() {
+        if let fileURL = Bundle.main.url(forResource: "some-file", withExtension: "txt") {
+            
+            if let fileContents = try? String(contentsOf: fileURL, encoding: .utf8) {
+                // we loaded the file into a string!
+            }
         }
     }
 }
