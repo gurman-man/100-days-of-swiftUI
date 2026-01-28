@@ -30,9 +30,10 @@ struct ContentView: View {
                     }
                 }
             }
+            .navigationTitle(rootWord)
+            .onSubmit(addNewWord)
+            .onAppear(perform: startGame)
         }
-        .navigationTitle(rootWord)
-        .onSubmit(addNewWord)
     }
     
     func addNewWord() {
@@ -47,6 +48,22 @@ struct ContentView: View {
         }
         
         newWord = ""
+    }
+    
+    func startGame() {
+        // шукаємо файл "start.txt" у нашому пакеті
+        if let startWordsURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
+            
+            // перетворимо знайдений файл у рядок (startWords)
+            if let startWords = try? String(contentsOf: startWordsURL, encoding: .utf8) {
+                
+                let allWords = startWords.components(separatedBy: "\n")
+                rootWord = allWords.randomElement() ?? "silkworm"
+                return
+            }
+        }
+        
+        fatalError("Could not load start.txt from bundle.")
     }
 }
 
