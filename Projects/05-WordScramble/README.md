@@ -22,7 +22,7 @@ Built with SwiftUI, the app focuses on text input handling, validation logic, an
 <div align="center">
   <img src="./Screenshots/1.png" alt="Main screen" width="325">
   <img src="./Screenshots/2.png" alt="Main screen: restart game" width="325">
-  <img src="./Screenshots/2.png" alt="Main screen: add new words" width="325">
+  <img src="./Screenshots/3.png" alt="Main screen: add new words" width="325">
 </div>
 
 ---
