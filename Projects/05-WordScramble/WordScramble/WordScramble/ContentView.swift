@@ -5,6 +5,16 @@
 //  Created by mac on 28.01.2026.
 //
 
+// MARK: - Challenges - Day31
+
+/*
+    1. Disallow answers that are shorter than three letters or are just our start word.
+ 
+    2. Add a toolbar button that calls startGame(), so users can restart with a new word whenever they want to.
+ 
+    3. Put a text view somewhere so you can track and show the player’s score for a given root word. How you calculate score is down to you, but something involving number of words and their letter count would be reasonable.
+ */
+
 import SwiftUI
 
 struct ContentView: View {
@@ -17,6 +27,7 @@ struct ContentView: View {
     @State private var errorTitle = ""
     @State private var errorMessage = ""
     @State private var showingError = false
+    @State private var score = 0
         
     // MARK: - UI Layout
     var body: some View {
@@ -42,6 +53,25 @@ struct ContentView: View {
             .alert(errorTitle, isPresented: $showingError) { } message: {
                 Text(errorMessage)
             }
+            // Challenge 2
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        startGame()
+                    } label: {
+                        Label("", systemImage: "arrow.clockwise")
+                    }
+                        .fontWeight(.black)
+                        .tint(.primary)
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Text("Score: \(score)")
+                        .fontWeight(.black)
+                        .tint(.primary)
+                        .monospacedDigit() // Щоб цифри не "стрибали" при зміні
+                }
+            }
         }
     }
     
@@ -53,7 +83,7 @@ struct ContentView: View {
         guard answer.count > 0 else { return }
         
         guard isOriginal(word: answer) else {
-            wordError(title: "Word used already", message: "Be more original")
+            wordError(title: "Word used already", message: "Be more original )")
             return
         }
         
@@ -67,9 +97,23 @@ struct ContentView: View {
             return
         }
         
+        // Challenge 1
+        guard isTheRoot(word: answer) else {
+            wordError(title: "Be more creative!", message: "You can't just use the start word.")
+            return
+        }
+        
+        // Challenge 1
+        guard isLongEnough(word: answer) else {
+            wordError(title: "Word too short", message: "Words must be at least 3 letters long.")
+            return
+        }
+        
         // Додаємо слово в початок списку з плавною анімацією
         withAnimation {
             usedWords.insert(answer, at: 0)
+            // Challenge 3
+            score += (answer.count + (answer.count > 5 ? 5 : 0)) // якщо слово довше за 5 літер: +5 балів
         }
         
         newWord = ""
@@ -85,6 +129,9 @@ struct ContentView: View {
                 
                 let allWords = startWords.components(separatedBy: "\n")
                 rootWord = allWords.randomElement() ?? "silkworm"
+                usedWords.removeAll()
+                newWord = ""
+                score = 0
                 return
             }
         }
@@ -129,6 +176,16 @@ struct ContentView: View {
         
         // Якщо помилок не знайдено (NSNotFound), значить слово справжнє
         return misspelledRange.location == NSNotFound
+    }
+    
+    // Challenge 1
+    func isLongEnough(word: String) -> Bool {
+        word.count >= 3
+    }
+    
+    // Challenge 1
+    func isTheRoot(word: String) -> Bool {
+        rootWord == word ? false  : true
     }
     
     
