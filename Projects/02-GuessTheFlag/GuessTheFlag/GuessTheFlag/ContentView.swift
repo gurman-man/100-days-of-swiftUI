@@ -17,6 +17,15 @@
 Day 24: Challenge 2
  
     2. Go back to project 2 and replace the Image view used for flags with a new FlagImage() view that renders one flag image using the specific set of modifiers we had.
+ 
+ Day 33: Challenges
+ 
+    1. When you tap a flag, make it spin around 360 degrees on the Y axis.
+ 
+    2. Make the other two buttons fade out to 25% opacity.
+ 
+    3. Add a third effect of your choosing to the two flags the user didn’t choose – maybe make them scale down? Or flip in a different direction? Experiment!
+ 
  */
 
 // MARK: - Implementation
@@ -43,6 +52,9 @@ struct ContentView: View {
     
     @State private var questionCounter = 0
     @State private var gameOver = false
+    
+    @State private var selectedFlag = -1 // Зберігаємо номер натиснутого прапора
+    @State private var wrongSelectedFlag = -1
     
     var body: some View {
         ZStack {
@@ -74,12 +86,23 @@ struct ContentView: View {
                     
                     ForEach(0..<3) { number in
                         Button {
-                            flagTapped(number)
+                            withAnimation {
+                                flagTapped(number)
+                            }
                         } label: {
-                            // Challenge 2 from Day 24
+                        // Challenge 2 from Day 24
                             FlagImage(name: countries[number])
                         }
+                        // Challenge 1 from Day 33
+                        .rotation3DEffect(
+                            .degrees(selectedFlag == number ? 360 : 0),
+                            axis: (x: 0, y: 1, z: 0)
+                        )
+                        // Challenge 2 from Day 33
+                        .opacity(selectedFlag == -1 || selectedFlag == number ? 1.0 : 0.25)
                         
+                        // Challenge 3 from Day 33
+                        .scaleEffect(selectedFlag == -1 || selectedFlag == number ? 1.0 : 0.7)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -115,6 +138,9 @@ struct ContentView: View {
     
     
     func flagTapped(_ number: Int) {
+        selectedFlag = number
+        
+        
         // Challenge 1
         if number == correctAnswer {
             scoreTitle = "Correct"
@@ -123,6 +149,7 @@ struct ContentView: View {
             // Challenge 2
             scoreTitle = "Wrong! That's the flag of \(countries[number])"
             score -= 1
+            wrongSelectedFlag = number
         }
         
         // Challenge 3
@@ -139,6 +166,7 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        selectedFlag = -1 // cкидаємо вибір
     }
     
     
