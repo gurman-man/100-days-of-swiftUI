@@ -95,7 +95,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle(isGameActive ? "Challenge Time" : "EDUTAINMENT")
+            .navigationTitle(isGameActive ? "" : "EDUTAINMENT")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -136,7 +136,7 @@ struct ContentView: View {
             let num1 = selectedTable
             let num2 = Int.random(in: 2...12)
             
-            let text = "How much will \(num1) x \(num2) be?"
+            let text = "\(num1) × \(num2)"
             let newQuestion = Question(text: text, answer: num1 * num2)
             questions.append(newQuestion)
         }
