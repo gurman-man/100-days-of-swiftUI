@@ -22,6 +22,16 @@ struct ContentView: View {
     @State private var questionsCount = 5
     private let questionOptions = [5, 10, 20]
     
+    init() {
+        // Кастомізація заголовка
+        let navAppearance = UINavigationBarAppearance()
+        navAppearance.titleTextAttributes = [
+            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: 22, weight: .ultraLight)
+        ]
+        UINavigationBar.appearance().standardAppearance = navAppearance
+    }
+    
     var body: some View {
         NavigationStack {
             Group {
@@ -32,10 +42,14 @@ struct ContentView: View {
                     }
                 } else {
                     ZStack {
+                        LinearGradient(colors: [.red, .yellow, .green], startPoint: .top, endPoint: .bottom)
+                        .ignoresSafeArea()
                         VStack(spacing: 5) {
                             Spacer()
-                            Text("Choose dificuty:")
+                            Text("Choose difficuty:")
                                 .fontWeight(.black)
+                                .foregroundStyle(.white)
+                                .shadow(color: .black, radius: 1)
                             Spacer()
                             
                             VStack (spacing: 20) {
@@ -50,6 +64,8 @@ struct ContentView: View {
                             VStack(spacing: 0) {
                                 Text("How many questions?")
                                     .fontWeight(.black)
+                                    .foregroundStyle(.white)
+                                    .shadow(color: .black, radius: 1)
                                 
                                 Picker("Questions", selection: $questionsCount) {
                                     ForEach(questionOptions, id: \.self) {
@@ -57,23 +73,29 @@ struct ContentView: View {
                                     }
                                 }
                                 .pickerStyle(.segmented)
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(10)
                                 .padding()
+                                .animation(.spring, value: questionsCount)
                             }
                             
                             Button("START ADVENTURE") {
                                 generateQuestions()
-                                isGameActive = true
+                                withAnimation {
+                                    isGameActive = true
+                                }
                             }
                             .buttonStyle(.borderedProminent)
+                            .shadow(color: .black, radius: 1)
                             .tint(.orange)
-                            .fontWeight(.bold)
+                            .font(.system(.title2, design: .rounded).weight(.heavy))
                             
                             Spacer()
                         }
                     }
                 }
             }
-            .navigationTitle(isGameActive ? "Challenge Time" : "Edutainment")
+            .navigationTitle(isGameActive ? "Challenge Time" : "EDUTAINMENT")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -83,6 +105,7 @@ struct ContentView: View {
             ForEach(start...end, id: \.self) { index in
                 Button {
                     selectedTable = index + 2
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred() // легка вібрація
                 } label: {
                     VStack {
                         Image(tableButtons[index])
@@ -91,10 +114,14 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity, maxHeight: 80)
                         
                         Text("\(index + 2)")
+                            .font(.system(size: 20) .weight(.semibold))
+                            .tint(.white)
+                            .shadow(color: .black, radius: 5)
                     }
                 }
                 .scaleEffect(selectedTable == index + 2 ? 1.2 : 1)
                 .animation(.easeOut, value: selectedTable) // додасть плавність
+                .opacity(selectedTable == index + 2 ? 1 : 0.6)
             }
         }
     }
