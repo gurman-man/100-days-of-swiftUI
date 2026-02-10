@@ -10,7 +10,7 @@
 - 🐾 Fun difficulty selection with animated animal buttons
 - 🎲 Randomly generated multiplication questions (based on chosen table)
 - 🎭 Game flow with alerts: invalid input, game over, exit game
-- 📳 Haptic feedback on correct answers (feels satisfying)
+- 📳 Haptic feedback on correct answers
 - ✨ Smooth transitions & clean UI styling with gradients + materials
 
 ---
@@ -20,7 +20,7 @@
 <div align="center">
   <img src="./Screenshots/1.png" alt="Main screen" width="325">
   <img src="./Screenshots/2.png" alt="GameView screen" width="325">
-  <img src="./Screenshots/2.png" alt="GameOver alert: restart game" width="325">
+  <img src="./Screenshots/3.png" alt="GameOver alert: restart game" width="325">
 </div>
 
 ---
