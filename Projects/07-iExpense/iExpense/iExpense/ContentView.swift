@@ -8,8 +8,8 @@
 import SwiftUI
 
 // Модель даних для однієї витрати. Identifiable дозволяє ForEach працювати без id: \.self
-struct ExpenseItem: Identifiable {
-    let id = UUID()
+struct ExpenseItem: Identifiable, Codable {
+    var id = UUID()
     let name: String
     let type: String
     let amount: Double
@@ -19,7 +19,30 @@ struct ExpenseItem: Identifiable {
 // @Observable робить клас "розумним": SwiftUI автоматично оновить інтерфейс, коли список items зміниться
 @Observable
 class Expenses {
-    var items = [ExpenseItem]()
+    var items = [ExpenseItem]() {
+        didSet { // спостерігач властивості
+            // 1. Намагаємося перетворити (encode) масив об'єктів у формат JSON
+            if let encoded = try? JSONEncoder().encode(items) {
+                // 2. Зберігаємо цей JSON у сховище UserDefaults під ключем "Items"
+                UserDefaults.standard.set(encoded, forKey: "Items")
+            }
+        }
+    }
+    
+    // Ініціалізатор (спрацьовує один раз при створенні Expenses)
+    init() {
+        // 1. Намагаємося дістати дані з UserDefaults за тим самим ключем
+        if let savedItems = UserDefaults.standard.data(forKey: "Items") {
+            let decoder = JSONDecoder()
+            
+            // 2. Намагаємося перетворити (decode) JSON назад у масив [ExpenseItem]
+            if let decodedItems = try? decoder.decode([ExpenseItem].self, from: savedItems) {
+                items = decodedItems
+                return
+            }
+        }
+        items = []
+    }
 }
 
 struct ContentView: View {
