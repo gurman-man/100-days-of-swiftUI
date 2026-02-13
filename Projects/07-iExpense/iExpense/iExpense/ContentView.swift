@@ -56,12 +56,16 @@ struct ContentView: View {
                 ForEach(expenses.items) { item in
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(item.name) // Працює!
+                            Text(item.name)
                                 .font(.headline)
                             Text(item.type)
                         }
                         Spacer()
-                        Text(item.amount, format: .currency(code: "USD"))
+                        // Challenge 1
+                        Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "UAH"))
+                        // Challenge 2
+                            .foregroundStyle(color(for: item.amount))
+                            .fontWeight(item.amount > 100 ? .bold : .regular)
                     }
                 }
                 .onDelete(perform: removeItems) // Додаємо можливість видалення свайпом
@@ -81,6 +85,16 @@ struct ContentView: View {
     
     func removeItems(at offsets: IndexSet) {
         expenses.items.remove(atOffsets: offsets)
+    }
+    
+    func color(for amount: Double) -> Color {
+        if amount < 10 {
+            return .green
+        } else if amount < 100 {
+            return .blue
+        } else {
+            return .red
+        }
     }
 }
 
