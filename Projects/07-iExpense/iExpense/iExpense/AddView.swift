@@ -25,30 +25,13 @@ struct AddView: View {
             Form {
                 TextField("Name", text: $name)
                 
-                List {
-                    Section("Personal") {
-                        ForEach(expenses.items.filter { $0.type == "Personal" }) { item in
-                            // Твій дизайн рядка тут
-                        }
-                        .onDelete { offsets in
-                            removeItems(at: offsets, in: "Personal")
-                        }
-                    }
-
-                    Section("Business") {
-                        ForEach(expenses.items.filter { $0.type == "Business" }) { item in
-                            // Твій дизайн рядка тут
-                        }
-                        .onDelete { offsets in
-                            removeItems(at: offsets, in: "Business")
-                        }
+                Picker("Type", selection: $type) {
+                    ForEach(types, id: \.self) {
+                        Text("\($0)")
                     }
                 }
-                
-                TextField("Amount",
-                          value: $amount,
-                          // Challenge 1
-                          format: .currency(code: Locale.current.currency?.identifier ?? "UAH")).keyboardType(.decimalPad)
+                // Challenge 1
+                TextField("Amount", value: $amount, format: .currency(code: Locale.current.currency?.identifier ?? "UAH")).keyboardType(.decimalPad)
             }
             .navigationTitle("Add new expense")
             .toolbar {
@@ -57,21 +40,6 @@ struct AddView: View {
                     expenses.items.append(item)
                     dismiss()
                 }
-            }
-        }
-    }
-    
-    func removeItems(at offsets: IndexSet, in sectionType: String) {
-        // 1. Створюємо тимчасовий масив тільки тих елементів, які ми бачимо в цій секції
-        let filteredItems = expenses.items.filter { $0.type == sectionType }
-        
-        for offset in offsets {
-            // 2. Знаходимо конкретний об'єкт, який хочемо видалити
-            let itemToDelete = filteredItems[offset]
-            
-            // 3. Знаходимо індекс цього об'єкта в ОСНОВНОМУ масиві за його унікальним ID
-            if let index = expenses.items.firstIndex(where: { $0.id == itemToDelete.id }) {
-                expenses.items.remove(at: index)
             }
         }
     }

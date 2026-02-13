@@ -5,6 +5,18 @@
 //  Created by mac on 11.02.2026.
 //
 
+// MARK: - Challenges - Day38
+
+/*
+    1. Use the user’s preferred currency, rather than always using US dollars.
+
+    2. Modify the expense amounts in 'ContentView' to contain some styling depending on their value – expenses under $10 should have one style, expenses under $100 another, and expenses over $100 a third style. What those styles are depend on you.
+
+    3. For a bigger challenge, try splitting the expenses list into two sections: one for personal expenses, and one for business expenses. This is tricky for a few reasons, not least because it means being careful about how items are deleted!
+ */
+
+// MARK: - Implementation
+
 import SwiftUI
 
 // Модель даних для однієї витрати. Identifiable дозволяє ForEach працювати без id: \.self
@@ -46,29 +58,32 @@ class Expenses {
 }
 
 struct ContentView: View {
-    @State private var expenses = Expenses()
+    @State var expenses = Expenses()
     
     @State private var showingAddExpense = false // Стан для керування 2 екраном
     
     var body: some View {
         NavigationStack {
             List {
-                ForEach(expenses.items) { item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                                .font(.headline)
-                            Text(item.type)
-                        }
-                        Spacer()
-                        // Challenge 1
-                        Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "UAH"))
-                        // Challenge 2
-                            .foregroundStyle(color(for: item.amount))
-                            .fontWeight(item.amount > 100 ? .bold : .regular)
+                // Challenge 3
+                Section("Personal") {
+                    ForEach(expenses.items.filter { $0.type == "Personal"}) { item in
+                        setupHStack(with: item)
+                    }
+                    .onDelete { offsets in
+                        removeItems(at: offsets, in: "Personal")
                     }
                 }
-                .onDelete(perform: removeItems) // Додаємо можливість видалення свайпом
+            
+                // Challenge 3
+                Section("Business") {
+                    ForEach(expenses.items.filter { $0.type == "Business"}) { item in
+                        setupHStack(with: item)
+                    }
+                    .onDelete { offsets in
+                        removeItems(at: offsets, in: "Business")
+                    }
+                }
             }
             .navigationTitle("iExpense")
             .toolbar {
@@ -82,18 +97,47 @@ struct ContentView: View {
             }
         }
     }
-    
-    func removeItems(at offsets: IndexSet) {
-        expenses.items.remove(atOffsets: offsets)
+}
+
+extension ContentView {
+    func setupHStack(with item: ExpenseItem) -> some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(item.name)
+                    .font(.headline)
+                Text(item.type)
+            }
+            Spacer()
+            // Challenge 1
+            Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "UAH"))
+            // Challenge 2
+                .foregroundStyle(color(for: item.amount))
+                .fontWeight(item.amount > 100 ? .bold : .regular)
+        }
     }
     
+    // Challenge 3
+    func removeItems(at offsets: IndexSet, in sectionType: String) {
+        // 1. Створюємо тимчасовий масив тільки тих елементів, які ми бачимо в цій секції
+        let filteredItems = expenses.items.filter { $0.type == sectionType }
+        
+        for offset in offsets {
+            // 2. Знаходимо конкретний об'єкт, який хочемо видалити
+            let itemToDelete = filteredItems[offset]
+           
+            // 3. Знаходимо індекс цього об'єкта в ОСНОВНОМУ масиві за його унікальним ID
+            if let index = expenses.items.firstIndex(where: { $0.id == itemToDelete.id }) {
+                expenses.items.remove(at: index)
+            }
+        }
+    }
+    
+    // Challenge 2
     func color(for amount: Double) -> Color {
-        if amount < 10 {
-            return .green
-        } else if amount < 100 {
-            return .blue
-        } else {
-            return .red
+        switch amount {
+        case ..<10:     return .green
+        case 10..<100:  return .blue
+        default:        return .red
         }
     }
 }
