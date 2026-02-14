@@ -18,8 +18,8 @@
 ## Screenshots
 
 <div align="center">
-  <img src="./Screenshots/1.gif" alt="Main screen" width="488">
-  <img src="./Screenshots/2.gif" alt="Sheet screen" width="488">
+  <img src="./Screenshots/1.png" alt="Main screen" width="488">
+  <img src="./Screenshots/2.png" alt="Sheet screen" width="488">
 </div>
 
 ---
