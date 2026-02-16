@@ -22,14 +22,13 @@ struct CustomText: View {
 
 struct ContentView: View {
     var body: some View {
-        ScrollView(.horizontal) {
-            LazyHStack(spacing: 10) {
-                ForEach(0..<100) {
-                    CustomText(text: "Item \($0)")
-                        .font(.title)
+        NavigationStack {
+            List(0..<100) { row in
+                    NavigationLink("Row \(row)") {
+                        Text("Detail \(row)")
+                    }
                 }
-            }
-            .frame(maxWidth: .infinity)
+                .navigationTitle("SwiftUI")
         }
     }
 }
