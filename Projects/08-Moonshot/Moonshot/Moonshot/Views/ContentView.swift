@@ -25,7 +25,7 @@ struct ContentView: View {
                     ForEach(missions) { mission in
                         // Перехід до Detail
                         NavigationLink {
-                            Text("Detail view")
+                            MissionView(mission: mission, astronauts: astronauts)
                         } label: {
                             VStack {
                                 Image(mission.image)
