@@ -7,28 +7,25 @@
 
 import SwiftUI
 
-struct DetailView: View {
-    var number: Int
+struct Student: Hashable {
+    var id = UUID()
     
-    var body: some View {
-        Text("Detail View \(number)")
-    }
-    
-    init(number: Int) {
-        self.number = number
-        print("Creating Detail View \(number)")
-    }
+    var name: String
+    var age: Int
 }
 
 struct ContentView: View {
     var body: some View {
         VStack {
             NavigationStack {
-                List(0..<1000) { i in
-                    NavigationLink("Tap Me") {
-                        Text("Detail View")
-                        DetailView(number: i)
-                    }
+                List(0..<100) { i in
+                    NavigationLink("Select \(i)", value: i)
+                }
+                .navigationDestination(for: Int.self) { selection in
+                    Text("You selected \(selection)")
+                }
+                .navigationDestination(for: Student.self) { student in
+                    Text("You selected \(student.name)")
                 }
             }
         }
