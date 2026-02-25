@@ -8,20 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var title = "SwiftUI"
+    
     var body: some View {
         NavigationStack {
             Text("Hello, world!")
-                .toolbar {
-                    ToolbarItemGroup(placement: .topBarLeading) {
-                        Button("Tap Me") {
-                            // action
-                        }
-                        
-                        Button("Or Tap Me") {
-                            // action
-                        }
-                    }
-                }
+                .navigationTitle($title)
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
