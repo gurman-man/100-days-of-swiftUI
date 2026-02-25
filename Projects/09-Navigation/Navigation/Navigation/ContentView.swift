@@ -7,35 +7,60 @@
 
 import SwiftUI
 
+@Observable
+class PathStore {
+    var path: NavigationPath {
+        didSet {
+            save()
+        }
+    }
+    
+    private let savePath = URL.documentsDirectory.appending(path: "Saved Path")
+    
+    // ініціалізатор для завантаження даних з диску та встановлення у шлях масиву
+    init() {
+        // спроба витягнути дані
+        if let data = try? Data(contentsOf: savePath) {
+            // спроба декодувати шлях
+            if let decoded = try? JSONDecoder().decode(NavigationPath.CodableRepresentation.self, from: data) {
+                path = NavigationPath(decoded)
+                return
+            }
+        }
+        
+        // якщо не вдалось декодувати шлях чи витягнути дані
+        path = NavigationPath()
+    }
+    
+    func save() {
+        guard let representation = path.codable else { return }
+        
+        do {
+            let data = try JSONEncoder().encode(representation)
+            try data.write(to: savePath)
+        } catch {
+            print("Failed to save navigation data")
+        }
+    }
+}
+
 struct DetailView: View {
     var number: Int
     
-    // lets us pass an @State property into another view and modify it
-    @Binding var path: [Int]
-    
     var body: some View {
-        // wrinting (adding value)
         NavigationLink("Go to Random Number", value: Int.random(in: 1...1000))
             .navigationTitle("Number: \(number)")
-            .toolbar {
-                // return to base View
-                Button("Home") {
-                    path.removeAll() // writing (changing value)
-                }
-            }
     }
 }
 
 struct ContentView: View {
-    @State private var path = [Int]()
+    @State private var pathStore = PathStore() // для збереження стану
     
     var body: some View {
-        // reading (getting path)
-        NavigationStack(path: $path) {
-            DetailView(number: 0, path: $path)
+        NavigationStack(path: $pathStore.path) {
+            DetailView(number: 0)
                 .navigationDestination(for: Int.self) { i in
-                    // reading (getting i)
-                    DetailView(number: i, path: $path)
+                    DetailView(number: i)
                 }
         }
         .padding()
