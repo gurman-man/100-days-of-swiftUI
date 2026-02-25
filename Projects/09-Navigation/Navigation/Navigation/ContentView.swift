@@ -7,39 +7,36 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct DetailView: View {
+    var number: Int
     
-    @State private var path = NavigationPath()
+    // lets us pass an @State property into another view and modify it
+    @Binding var path: [Int]
     
     var body: some View {
-        NavigationStack(path: $path) {
-            List {
-                ForEach(0..<5) { i in
-                    NavigationLink("Select Number: \(i)", value: i)
-                }
-                ForEach(0..<5) { i in
-                    NavigationLink("Select String: \(i)", value: String(i))
-                }
-            }
+        // wrinting (adding value)
+        NavigationLink("Go to Random Number", value: Int.random(in: 1...1000))
+            .navigationTitle("Number: \(number)")
             .toolbar {
-                //  programmatic navigation
-                Button("Push 556") {
-                    path.append(556)
-                }
-                
-                Button("Push Hello") {
-                    path.append("Hello")
+                // return to base View
+                Button("Home") {
+                    path.removeAll() // writing (changing value)
                 }
             }
-            
-            // using navigationDestination() with different data types
-            .navigationDestination(for: Int.self) { selection in
-                Text("You selected the number \(selection)")
-            }
-            
-            .navigationDestination(for: String.self) { selection in
-                Text("You selected the string \(selection)")
-            }
+    }
+}
+
+struct ContentView: View {
+    @State private var path = [Int]()
+    
+    var body: some View {
+        // reading (getting path)
+        NavigationStack(path: $path) {
+            DetailView(number: 0, path: $path)
+                .navigationDestination(for: Int.self) { i in
+                    // reading (getting i)
+                    DetailView(number: i, path: $path)
+                }
         }
         .padding()
     }
