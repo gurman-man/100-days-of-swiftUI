@@ -15,6 +15,12 @@
     3. For a tough challenge, add a toolbar item to ContentView that toggles between showing missions as a grid and as a list.
  */
 
+// MARK: - Extra Challenge - Day46
+
+/*
+    3. Return to project 8 (Moonshot), and upgrade it to use NavigationLink(value:). This means adding Hashable conformance, and thinking carefully how to use navigationDestination().
+*/
+
 // MARK: - Impelementation
 
 import SwiftUI
@@ -38,6 +44,13 @@ struct ContentView: View {
                 } else {
                     SpaceFlightsList()
                 }
+            }
+            // Extra Challenge 3 - Day46
+            .navigationDestination(for: Mission.self) { mission in
+                MissionView(mission: mission, astronauts: astronauts)
+            }
+            .navigationDestination(for: Astronaut.self) { astronaut in
+                AstronautView(astronaut: astronaut)
             }
             .navigationTitle("Moonshot")
             .background(.darkBackground)
@@ -70,9 +83,9 @@ struct SpaceFlightsGrid: View {
         LazyVGrid(columns: columns) {
             ForEach(missions) { mission in
                 // Перехід до Detail
-                NavigationLink {
-                    MissionView(mission: mission, astronauts: astronauts)
-                } label: {
+                // Extra Challenge 3 - Day46
+                // Не створюємо екран прямо тут, а передаємо об'єкт mission у стек
+                NavigationLink (value: mission) {
                     VStack {
                         Image(mission.image)
                             .resizable()
@@ -111,9 +124,8 @@ struct SpaceFlightsGrid: View {
 struct SpaceFlightsList: View {
     var body:  some View {
         List(missions) { mission in
-            NavigationLink {
-                MissionView(mission: mission, astronauts: astronauts)
-            } label: {
+            // Extra Challenge 3 - Day46
+            NavigationLink (value: mission) {
                 HStack {
                     Image(mission.image)
                         .resizable()
