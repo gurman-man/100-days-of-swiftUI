@@ -15,6 +15,15 @@
     3. For a bigger challenge, try splitting the expenses list into two sections: one for personal expenses, and one for business expenses. This is tricky for a few reasons, not least because it means being careful about how items are deleted!
  */
 
+// MARK: - Extra Challenges - Day46
+
+/*
+    1. Change project 7 (iExpense) so that it uses NavigationLink for adding new expenses rather than a sheet. (Tip: The dismiss() code works great here, but you might want to add the navigationBarBackButtonHidden() modifier so they have to explicitly choose Cancel.)
+ 
+    2. Try changing project 7 so that it lets users edit their issue name in the navigation title rather than a separate textfield. Which option do you prefer?
+*/
+
+
 // MARK: - Implementation
 
 import SwiftUI
@@ -87,13 +96,12 @@ struct ContentView: View {
             }
             .navigationTitle("iExpense")
             .toolbar {
-                Button("Add Expense", systemImage: "plus") {
-                    showingAddExpense = true
+                // Extra Challenge1 - Day46
+                NavigationLink {
+                    AddView(expenses: expenses)
+                } label: {
+                    Label("Add Expense", systemImage: "plus")
                 }
-            }
-            // Викликаємо AddView та ПЕРЕДАЄМО йому наш об'єкт expenses
-            .sheet(isPresented: $showingAddExpense) {
-                AddView(expenses: expenses)
             }
         }
     }
