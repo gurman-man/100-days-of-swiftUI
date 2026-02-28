@@ -20,14 +20,20 @@ import SwiftUI
 // MARK: - Imlementation
 
 struct ContentView: View {
-    @State private var title = "SwiftUI"
-    
+
+
     var body: some View {
         NavigationStack {
-            Text("Hello, world!")
-                .navigationTitle($title)
-                .navigationBarTitleDisplayMode(.inline)
+            List(0..<100) { i in
+                Text("Row \(i)")
+            }
+            .navigationTitle("Title goes here")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.blue, for: .navigationBar)
+            .toolbarColorScheme(.dark)
+            //.toolbar(.hidden, for: .navigationBar)
         }
+
     }
 }
 
