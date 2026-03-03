@@ -8,17 +8,37 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var store = HabitStore()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                ForEach(store.savedHabits) { habit in
+                    NavigationLink(value: habit.title) {
+                        HabitRowView(habit: habit)
+                    }
+                }
+                .onDelete(perform: store.deleteHabit)
+            }
+            .navigationTitle("Habit Tracker")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        // action
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
         }
-        .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    let previewStore = HabitStore()
+    previewStore.savedHabits = [
+        Habit(id: UUID(), title: "Gym", description: "Go to gym", completionCount: 3, category: .health),
+        Habit(id: UUID(), title: "Swift", description: "Learn SwiftUI", completionCount: 10, category: .education)
+    ]
+    return ContentView(store: previewStore)
 }
