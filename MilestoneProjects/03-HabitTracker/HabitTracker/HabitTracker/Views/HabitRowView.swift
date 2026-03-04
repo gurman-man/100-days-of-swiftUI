@@ -12,27 +12,40 @@ struct HabitRowView: View {
     
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 10) {
+            Image(systemName: habit.icon)
+                .font(.title2)
+                .frame(width: 60)
+                .foregroundColor(habit.color.swiftUIColor)
+            
+            VStack(alignment: .leading, spacing: 4) {
                 Text(habit.title)
+                    .font(.headline)
                 
                 
                 Text(habit.category.rawValue)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(habit.color.swiftUIColor)
             }
             
             Spacer()
             
             VStack(alignment: .trailing) {
-                Text("^[\(habit.completionCount) completion](inflect: true)")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .padding(8)
+                HStack(spacing: 4) {
+                    Text("\(habit.completionCount)")
+                        .monospacedDigit() // Щоб цифри не стрибали
+                    
+                    Text("/")
+                    
+                    Text("^[\(habit.goal) time](inflect: true)")
+                    
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .foregroundStyle(habit.completionCount >= habit.goal ? Color(red: 0.3, green: 0.8, blue: 0.3) : .secondary)
             }
             
-            
         }
-        .padding()
+        .padding(.vertical, 5)
     }
 }
 
@@ -42,5 +55,9 @@ struct HabitRowView: View {
         title: "Wake Up",
         description: "at 06:00 AM",
         completionCount: 5,
-        category: .health))
+        category: .health,
+        icon: "figure.run",
+        color: .red,
+        goal: 1)
+    )
 }

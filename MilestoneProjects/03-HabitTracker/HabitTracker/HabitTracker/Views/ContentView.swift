@@ -9,24 +9,24 @@ import SwiftUI
 
 struct ContentView: View {
     @State var store = HabitStore()
+    @State private var isShowingAddHabit = false
     
     var body: some View {
         NavigationStack {
             List {
                 ForEach(store.savedHabits) { habit in
-                    NavigationLink(value: habit.title) {
-                        HabitRowView(habit: habit)
-                    }
+                    HabitRowView(habit: habit)
                 }
                 .onDelete(perform: store.deleteHabit)
             }
             .navigationTitle("Habit Tracker")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        // action
-                    } label: {
+                    Button { isShowingAddHabit = true } label: {
                         Image(systemName: "plus")
+                    }
+                    .sheet(isPresented: $isShowingAddHabit) {
+                        AddHabitView(store: store)
                     }
                 }
             }
@@ -37,8 +37,8 @@ struct ContentView: View {
 #Preview {
     let previewStore = HabitStore()
     previewStore.savedHabits = [
-        Habit(id: UUID(), title: "Gym", description: "Go to gym", completionCount: 3, category: .health),
-        Habit(id: UUID(), title: "Swift", description: "Learn SwiftUI", completionCount: 10, category: .education)
+        Habit(id: UUID(), title: "Gym", description: "Go to gym", completionCount: 1, category: .health, icon: "figure.run", color: .blue, goal: 2),
+        Habit(id: UUID(), title: "Swift", description: "Learn SwiftUI", completionCount: 10, category: .education, icon: "book.fill", color: .green, goal: 10)
     ]
     return ContentView(store: previewStore)
 }
