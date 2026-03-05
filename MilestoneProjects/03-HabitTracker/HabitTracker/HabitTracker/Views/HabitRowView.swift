@@ -41,7 +41,7 @@ struct HabitRowView: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .foregroundStyle(habit.completionCount >= habit.goal ? Color(red: 0.3, green: 0.8, blue: 0.3) : .secondary)
+                .foregroundStyle(habit.completionCount >= habit.goal ? habit.color.swiftUIColor : .secondary)
             }
             
         }

@@ -35,7 +35,7 @@ enum HabitCategory: String, Codable, CaseIterable {
 }
 
 enum HabitColor: String, Codable, CaseIterable {
-    case red, orange, yellow, green, mint, white, blue, indigo, purple, pink, gray, brown
+    case red, orange, yellow, green, mint, teal, blue, indigo, purple, pink, gray, brown
     
     var swiftUIColor: Color {
         switch self {
@@ -44,7 +44,7 @@ enum HabitColor: String, Codable, CaseIterable {
         case .yellow: return .yellow
         case .green: return .green
         case .mint: return .mint
-        case .white: return .white
+        case .teal: return .teal
         case .blue: return .blue
         case .indigo: return .indigo
         case .purple: return .purple

@@ -14,8 +14,10 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(store.savedHabits) { habit in
-                    HabitRowView(habit: habit)
+                ForEach(0..<store.savedHabits.count, id: \.self) { index in
+                    NavigationLink(destination: HabitDetailView(habit: $store.savedHabits[index])) {
+                        HabitRowView(habit: store.savedHabits[index])
+                    }
                 }
                 .onDelete(perform: store.deleteHabit)
             }
