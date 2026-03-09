@@ -37,10 +37,12 @@ struct HabitRowView: View {
                     Text("/")
                     
                     Text("^[\(habit.goal) time](inflect: true)")
+                        .monospacedDigit()
                     
                 }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .lineLimit(1)
                 .foregroundStyle(habit.completionCount >= habit.goal ? habit.color.swiftUIColor : .secondary)
             }
             

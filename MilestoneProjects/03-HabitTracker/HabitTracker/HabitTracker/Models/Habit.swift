@@ -16,6 +16,9 @@ struct Habit: Codable, Identifiable {
     var icon: String
     var color: HabitColor
     var goal: Int
+    
+    var lastCompletionDate: Date?
+    var currentStreak: Int = 0
 }
 
 enum HabitCategory: String, Codable, CaseIterable {
@@ -23,6 +26,8 @@ enum HabitCategory: String, Codable, CaseIterable {
     case work = "Work"
     case hobby = "Hobby"
     case education = "Education"
+    case finance = "Finance"
+    case lifestyle = "Lifestyle"
     
     var icons: [String] {
         switch self {
@@ -30,6 +35,8 @@ enum HabitCategory: String, Codable, CaseIterable {
         case .work: return ["laptopcomputer", "calendar", "paperplane.fill", "briefcase.fill", "doc.text.fill"]
         case .hobby: return ["paintpalette.fill", "camera.fill", "gamecontroller.fill", "music.note", "bicycle"]
         case .education: return ["book.fill", "pencil", "brain", "graduationcap.fill", "lightbulb.fill"]
+        case .finance: return ["dollarsign.circle.fill", "banknote.fill", "chart.line.uptrend.xyaxis", "creditcard.fill", "bag.fill"]
+        case .lifestyle: return ["drop.fill", "moon.stars.fill", "cup.and.saucer.fill", "leaf.fill", "house.fill"]
         }
     }
 }

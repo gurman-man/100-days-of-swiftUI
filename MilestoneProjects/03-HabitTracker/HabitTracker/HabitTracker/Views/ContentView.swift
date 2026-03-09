@@ -20,6 +20,7 @@ struct ContentView: View {
                     }
                 }
                 .onDelete(perform: store.deleteHabit)
+                .onMove(perform: moveHabit)
             }
             .navigationTitle("Habit Tracker")
             .toolbar {
@@ -31,8 +32,17 @@ struct ContentView: View {
                         AddHabitView(store: store)
                     }
                 }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    EditButton()
+                }
             }
         }
+    }
+    
+    // Функція для переміщення елементів
+    func moveHabit(from source: IndexSet, to destination: Int) {
+        store.savedHabits.move(fromOffsets: source, toOffset: destination)
     }
 }
 
