@@ -7,57 +7,27 @@
 
 import SwiftUI
 
-struct Response: Codable {
-    var results: [Result]
-}
-
-struct Result: Codable {
-    var trackId: Int
-    var trackName: String
-    var collectionName: String
-}
-
-private var stringURL = "https://itunes.apple.com/search?term=taylor+swift&entity=song"
-
-
 struct ContentView: View {
-    @State private var results = [Result]()
-    
-    
     var body: some View {
-        List(results, id: \.trackId) { item in
-            VStack(alignment: .leading) {
-                Text(item.trackName)
-                    .font(.headline)
-                
-                Text(item.collectionName)
-            }
-        }
-        .task {
-            await loadData()
-        }
-    }
-    
-    
-    func loadData() async {
-        
-        // 1. Creating the URL we want to read
-        guard let url =  URL(string: stringURL) else {
-            print("Invalid URL")
-            return
-        }
-        
-        // 2. Fetching data from that URL
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
+        AsyncImage(url: URL(string: "https://hws.dev/img/logo.png")) { phase in
             
-            // 3. Decoding the result of that data into a Response struct
-            if let decoded = try? JSONDecoder().decode(Response.self, from: data) {
-                results = decoded.results
+            // 1. Перевіряємо, чи картинка успішно завантажена
+            if let image = phase.image {
+                image
+                    .resizable()    // Дозволяємо змінювати розмір
+                    .scaledToFit()  // Масштабуємо, щоб вписати в рамки без спотворен
+                
+            // 2. Якщо картинки немає, перевіряємо, чи виникла помилка
+            } else if let error = phase.error {
+                Text("Помилка: \(error.localizedDescription)")
+                
+            // 3. Якщо немає ні картинки, ні помилки — значить іде процес завантаження
+            } else {
+                ProgressView()
             }
-        } catch {
-            print("Invalid data")
         }
+        // Встановлюємо жорсткі розміри для всього контейнера AsyncImage
+        .frame(width: 200, height: 200)
     }
 }
 
