@@ -24,7 +24,7 @@ struct AddressView: View {
                 NavigationLink("Check out") {
                     CheckoutView(order: order)
                 }
-                .disabled(order.hasVaildAddress == false)
+                .disabled(order.hasValidAddress == false)
             }
         }
         .navigationTitle("Delivery details")

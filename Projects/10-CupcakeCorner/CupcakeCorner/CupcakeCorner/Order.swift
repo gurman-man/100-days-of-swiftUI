@@ -8,7 +8,21 @@
 import SwiftUI
 
 @Observable
-class Order {
+class Order: Codable {
+    // CodingKeys — це мапа для перекладу
+    // Swift використовує _ім'я (через @Observable), а JSON — звичайне ім'я
+    enum CodingKeys: String, CodingKey {
+        case _type = "type"
+        case _quantity = "quantity"
+        case _specialRequestEnabled = "specialRequestEnabled"
+        case _extraFrosting = "extraFrosting"
+        case _addSprinkles = "addSprinkles"
+        case _name = "name"
+        case _streetAddress = "streetAddress"
+        case _city = "city"
+        case _zip = "zip"
+    }
+    
     static let types = ["Vanilla", "Strawberry", "Chocolate", "Rainbow"]
     
     var type = 0
@@ -30,13 +44,15 @@ class Order {
     var city = ""
     var zip = ""
     
-    var hasVaildAddress: Bool {
+    // Перевірка заповненості всіх полів адрес
+    var hasValidAddress: Bool {
         if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
             return false
         }
         return true
     }
     
+    // Розрахунок вартості тортиків
     var cost: Decimal {
         // $2 per cake
         var cost = Decimal(quantity) * 2
