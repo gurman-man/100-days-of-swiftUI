@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var order = Order() // щоб всіекрани працювали з тими самими даними
+    @State private var order = Order() // щоб всі екрани працювали з тими самими даними (джерело даних)
     
     var body: some View {
         NavigationStack {
@@ -41,7 +41,7 @@ struct ContentView: View {
                     // section of Navigation to AdressView
                     Section {
                         NavigationLink("Delivery details") {
-                            AddressView(order: order)
+                            AddressView(order: order) // передали посилання на той самий order
                         }
                     }
                     

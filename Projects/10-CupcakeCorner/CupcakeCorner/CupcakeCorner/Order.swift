@@ -23,4 +23,17 @@ class Order {
 
     var extraFrosting = false // глазур
     var addSprinkles = false // посипка
+    
+    
+    var name = ""
+    var streetAddress = ""
+    var city = ""
+    var zip = ""
+    
+    var hasVaildAddress: Bool {
+        if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
+            return false
+        }
+        return true
+    }
 }
