@@ -21,7 +21,7 @@
   <img src="./Screenshots/1.png" alt="Main screen" width="244">
   <img src="./Screenshots/2.png" alt="Detail screen" width="244">
   <img src="./Screenshots/3.png" alt="Form to create tracking" width="244">
-  <img src="./Screenshots/4.png" alt="Showing confetti"244">
+  <img src="./Screenshots/4.png" alt="Showing confetti" width=244">
 </div>
 
 ---
