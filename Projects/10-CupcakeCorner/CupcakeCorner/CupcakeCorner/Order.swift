@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+/*
+    MARK: - Використовуємо клас Order, тому що нам потрібно:
+ 
+    1. Передавати дані між екранами: Клас — це «посилання» (reference type), тому коли ви змінюєте щось на екрані адреси, ці зміни автоматично бачить екран оформлення замовлення (CheckoutView).
+ 
+    2. Використовувати Codable: Нам потрібно легко перетворити все замовлення на один JSON-об'єкт для відправки на сервер. Робити це з купою окремих змінних @AppStorage було б набагато важче.
+*/
+
 @Observable
 class Order: Codable {
     // CodingKeys — це мапа для перекладу
@@ -38,18 +46,46 @@ class Order: Codable {
     var extraFrosting = false // глазур
     var addSprinkles = false // посипка
     
+    private let defaults = UserDefaults.standard
     
-    var name = ""
-    var streetAddress = ""
-    var city = ""
-    var zip = ""
+    var name: String {
+        // спостерігач, щоб зберігати дані, як тільки вони змінюються
+        didSet {
+            defaults.set(name, forKey: StorageKeys.name)
+        }
+    }
+    
+    var streetAddress: String {
+        didSet {
+            defaults.set(streetAddress, forKey: StorageKeys.street)
+        }
+    }
+    var city: String {
+        didSet {
+            defaults.set(city, forKey: StorageKeys.city)
+        }
+    }
+    var zip: String {
+        didSet {
+            defaults.set(zip, forKey: StorageKeys.zip)
+        }
+    }
+    
+    // Використовуємо ініціалізатор, щоб завантажити дані з UserDefaults при створенні замовлення
+    init() {
+        self.name = defaults.string(forKey: StorageKeys.name) ?? ""
+        self.streetAddress = defaults.string(forKey: StorageKeys.street) ?? ""
+        self.city = defaults.string(forKey: StorageKeys.city) ?? ""
+        self.zip = defaults.string(forKey: StorageKeys.zip) ?? ""
+    }
     
     // Перевірка заповненості всіх полів адрес
     var hasValidAddress: Bool {
-        if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
-            return false
-        }
-        return true
+        // Challenge 1
+        let textFieldsValid = !name.isBlank && !streetAddress.isBlank && !city.isBlank && !zip.isBlank
+        let zipIsValid = !zip.isBlank && zip.isNumeric && zip.count == 5
+        
+        return textFieldsValid && zipIsValid
     }
     
     // Розрахунок вартості тортиків
@@ -72,4 +108,23 @@ class Order: Codable {
         
         return cost
     }
+}
+
+// Challenge 1 - Day 52
+extension String {
+    var isBlank: Bool {
+        return self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
+    var isNumeric: Bool {
+        // перевіряє, чи відповідає кожен окремий елемент колекції певній умові
+        return !self.isEmpty && self.allSatisfy { $0.isNumber }
+    }
+}
+
+enum StorageKeys {
+    static let name = "name"
+    static let street = "streetAddress"
+    static let city = "city"
+    static let zip = "zip"
 }

@@ -7,11 +7,27 @@
 
 import SwiftUI
 
+// Challenge 2
+enum CheckoutError: Error, LocalizedError {
+    case invalidResponse
+    case serverError
+    case encodingFailed
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidResponse: return "Invalid response from the server."
+        case .serverError: return "The server temporary unavailable. Please try again later."
+        case .encodingFailed: return "Failed to encode the order data."
+        }
+    }
+}
+
 struct CheckoutView: View {
     var order: Order
     
     @State private var confirmationMessage = ""
     @State private var showingConfirmation = false
+    @State private var alertTitle = ""
     
     var body: some View {
         ScrollView {
@@ -42,7 +58,7 @@ struct CheckoutView: View {
         .navigationBarTitleDisplayMode(.inline)
         .scrollBounceBehavior(.basedOnSize) // Дозволяє ScrollView відскакувати, тільки якщо контент не влізає в екран
         
-        .alert("Thank you!", isPresented: $showingConfirmation) {
+        .alert(alertTitle, isPresented: $showingConfirmation) {
             Button("OK") { }
         } message: {
             Text(confirmationMessage)
@@ -54,7 +70,7 @@ struct CheckoutView: View {
     func placeOrder() async {
         // 1. Конвертуємо наш об'єкт order у формат JSON
         guard let encoded = try? JSONEncoder().encode(order) else {
-            print("Failed to encode order")
+            showErrorMessage(CheckoutError.encodingFailed.localizedDescription)
             return
         }
         
@@ -66,26 +82,33 @@ struct CheckoutView: View {
         
         do {
             // 3. Відправляємо дані на сервер та чекаємо на відповідь (upload)
-            let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
+            let (data, response) = try await URLSession.shared.upload(for: request, from: encoded)
             
-            // Додай це, щоб побачити, ЩО саме прислав сервер
-            if let stringData = String(data: data, encoding: .utf8) {
-                print("Server response: \(stringData)")
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                // Якщо код 404, 405 або 500 — ми відразу викидаємо помилку, що сервер впав
+                throw CheckoutError.serverError
             }
             
             // 4. Пробуємо розшифрувати те, що прислав сервер, назад у наш тип Order
-            let decodedOrder = try JSONDecoder().decode(Order.self, from: data)
+            guard let decodedOrder = try? JSONDecoder().decode(Order.self, from: data) else {
+                throw CheckoutError.invalidResponse
+            }
             
             // 5. Формуємо успішне повідомлення для користувача
+            alertTitle = "Thank you!"
             confirmationMessage = "Your order for \(decodedOrder.quantity)x \(Order.types[decodedOrder.type].lowercased()) cupcakes is on its way!"
             showingConfirmation = true
             
         } catch {
-            // Якщо інтернет зник або сервер лежить — виводимо помилку
-            print("Checkout failed: \(error.localizedDescription)")
-            confirmationMessage = "Checkout failed: \(error.localizedDescription)"
-            showingConfirmation = true
+            // Challenge 2 - Day 52
+            showErrorMessage(error.localizedDescription)
         }
+    }
+    
+    func showErrorMessage(_ message: String) {
+        alertTitle = "Oops!"
+        confirmationMessage = message
+        showingConfirmation = true
     }
 }
 
