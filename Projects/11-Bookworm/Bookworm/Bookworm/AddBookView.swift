@@ -41,7 +41,13 @@ struct AddBookView: View {
                 
                 Section {
                     Button("SAVE") {
+                        // 1. Створюємо об'єкт книги
                         let newBook = Book(title: title, author: author, genre: genre, review: review, rating: rating)
+                        
+                        // 2. Додаємо книгу в контекст SwiftData
+                        modelContext.insert(newBook)
+                        
+                        // 3. Закриваємо вікно
                         dismiss()
                     }
                 }
