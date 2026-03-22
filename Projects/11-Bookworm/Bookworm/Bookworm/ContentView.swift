@@ -11,7 +11,12 @@ import SwiftUI
 // можливість відображення AddBookView та приховування під час додавання книг
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext // для видалення книг
-    @Query var books: [Book] // для зчитування книг
+    
+    // Для зчитування книг та сортування
+    @Query(sort: [
+        SortDescriptor(\Book.title),
+        SortDescriptor(\Book.author)
+    ])  var books: [Book]
     
     @State private var showingAddScreen = false // для відстеження чи відображається вікно
     
