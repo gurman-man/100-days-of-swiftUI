@@ -25,7 +25,8 @@ struct ContentView: View {
     // Для зчитування книг та сортування
     @Query(sort: [
         SortDescriptor(\Book.title),
-        SortDescriptor(\Book.author)
+        SortDescriptor(\Book.author),
+        SortDescriptor(\Book.date, order: .reverse) // щоб бачити останні прочитані книги першими
     ])  var books: [Book]
     
     @State private var showingAddScreen = false // для відстеження чи відображається вікно

@@ -15,31 +15,50 @@ struct DetailView: View {
     
     let book: Book
     
+    
     var body: some View {
-        ScrollView {
-            ZStack(alignment: .bottomTrailing) {
-                Image(book.genre)
-                    .resizable()
-                    .scaledToFit()
-                
-                Text(book.genre.uppercased())
-                    .fontWeight(.black)
-                    .padding(8)
-                    .foregroundStyle(.white)
-                    .background(.black.opacity(0.75))
-                    .clipShape(.capsule)
-                    .offset(x: -5, y: -5)
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack { // Контент всередині ScrollView
+                    ZStack(alignment: .bottomTrailing) {
+                        Image(book.genre)
+                            .resizable()
+                            .scaledToFit()
+                        
+                        Text(book.genre.uppercased())
+                            .fontWeight(.black)
+                            .padding(8)
+                            .foregroundStyle(.white)
+                            .background(.black.opacity(0.75))
+                            .clipShape(.capsule)
+                            .offset(x: -5, y: -5)
+                    }
+                    
+                    Text(book.author)
+                        .font(.title)
+                        .foregroundStyle(.secondary)
+                        .padding()
+                    
+                    Text(book.review)
+                        .padding()
+                }
             }
             
-            Text(book.author)
-                .font(.title)
-                .foregroundStyle(.secondary)
-            
-            Text(book.review)
-                .padding()
-            
-            RatingView(rating: .constant(Int(book.rating)))
-                .font(.largeTitle)
+            VStack {
+                Divider().padding(.horizontal)
+                
+                RatingView(rating: .constant(Int(book.rating)))
+                    .font(.largeTitle)
+                    .padding(.vertical, 8) // Невеликий відступ зверху/знизу
+                
+                Divider().padding(.horizontal)
+                
+                // Challenge 3
+                Text(book.date.formatted(date: .long, time: .shortened))
+                    .font(.subheadline)
+                    .italic()
+                    .padding(.vertical, 20)
+            }
         }
         .navigationTitle(book.title)
         .navigationBarTitleDisplayMode(.inline)
@@ -72,7 +91,7 @@ struct DetailView: View {
         let container = try ModelContainer(for: Book.self, configurations: config)
         
         // 3. Mock Data: створюємо тестовий об'єкт для відображення
-        let example = Book(title: "Test Book", author: "Test Author", genre: "Fantasy", review: "This was a great book; I really enjoyed it!", rating: 4)
+        let example = Book(title: "Test Book", author: "Test Author", genre: "Fantasy", review: "This was a great book; I really enjoyed it!", rating: 4, date: .now)
         
         // 4. Ін'єкція: передаємо дані у View та підключаємо до контейнера
         return DetailView(book: example)

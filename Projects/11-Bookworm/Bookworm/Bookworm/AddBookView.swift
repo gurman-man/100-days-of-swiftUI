@@ -40,7 +40,21 @@ struct AddBookView: View {
                 
                 Section("Write a review") {
                     TextEditor(text: $review)
+                    
+                    HStack {
+                        Text(review.count < 25 ? "Review is too short" : "Review length is good")
+                            .font(.caption)
+                            .foregroundStyle(review.count < 25 ? .red : .green)
+                        
+                        Spacer()
+                        
+                        Text("\(review.count) / 25")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    
                     RatingView(rating: $rating)
+                    
                 }
                 
                 Section {
