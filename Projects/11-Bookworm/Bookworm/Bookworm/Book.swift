@@ -24,3 +24,10 @@ class Book {
         self.rating = rating
     }
 }
+
+// Challenge 1
+extension String {
+    var isBlank: Bool {
+        return self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+}

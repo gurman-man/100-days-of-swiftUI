@@ -14,10 +14,14 @@ struct AddBookView: View {
     @State private var title = ""
     @State private var author = ""
     @State private var rating = 3
-    @State private var genre = "Fantasy"
+    @State private var genre = ""
     @State private var review = ""
     
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
+    
+    var isFormInvalid: Bool {
+        title.isBlank || author.isBlank || genre.isBlank || review.isBlank || review.count < 25
+    }
     
     
     var body: some View {
@@ -51,6 +55,8 @@ struct AddBookView: View {
                         dismiss()
                     }
                 }
+                // Challenge 1
+                .disabled(isFormInvalid)
             }
             .navigationTitle("Add Book")
         }
