@@ -38,13 +38,15 @@ struct ContentView: View {
                         HStack {
                             EmojiRatingView(rating: book.rating)
                                 .font(.largeTitle)
+                            
                         }
-                        
+                        // Challenge 2
                         VStack(alignment: .leading) {
                             Text(book.title)
                                 .font(.headline)
+                                .foregroundStyle(book.rating == 1 ? .red : .primary)
                             Text(book.author)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(book.rating == 1 ? .red : .secondary)
                         }
                     }
                 }
