@@ -13,27 +13,35 @@ struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     
     // @Query автоматично оновлює список при будь-яких змінах у базі даних
-    @Query(sort: \User.name) var users: [User]
-    
-    // Path - "шлях" у який ми передаємо об'єкт User для переходу
-    @State private var path = [User]()
+    // Макрос #Predicate перетворює твій код Swift на запит, який зрозуміє база даних
+    @Query(filter: #Predicate<User> { user in
+        // localizedStandardContains — розумний пошук (ігнорує регістр: "R" == "r")
+        user.name.localizedStandardContains("R") &&
+        user.city == "London"
+    }, sort: \User.name) var users: [User]
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack {
             List(users) { user in
-                NavigationLink(value: user) {
-                    Text(user.name)
-                }
+                Text(user.name)
             }
             .navigationTitle("Users")
-            .navigationDestination(for: User.self) { user in
-                EditUserView(user: user)
-            }
             .toolbar {
-                Button("Add User", systemImage: "plus") {
-                    let user = User(name: "", city: "", joinDate: .now)
-                    modelContext.insert(user)   // Додаємо в контекст (пам'ять)
-                    path = [user]
+                Button("Add Samples", systemImage: "plus") {
+                    // Видаляє ВСІ об'єкти типу User з бази одним махом
+                    try? modelContext.delete(model: User.self)
+                    
+                    // 86400 — це кількість секунд в одній добі (24 * 60 * 60)
+                    // -10 — це дата "10 днів тому" від поточної
+                    let first = User(name: "Ed Sheeran", city: "London", joinDate: .now.addingTimeInterval(86400 * -10))
+                    let second = User(name: "Rosa Diaz", city: "New York", joinDate: .now.addingTimeInterval(86400 * -5))
+                    let third = User(name: "Roy Kent", city: "London", joinDate: .now.addingTimeInterval(86400 * 5))
+                    let fourth = User(name: "Johnyy English", city: "London", joinDate: .now.addingTimeInterval(86400 * 10))
+                    
+                    modelContext.insert(first)
+                    modelContext.insert(second)
+                    modelContext.insert(third)
+                    modelContext.insert(fourth)
                 }
             }
         }
