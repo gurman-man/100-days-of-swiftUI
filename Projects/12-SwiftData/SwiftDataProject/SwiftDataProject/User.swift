@@ -14,6 +14,9 @@ class User {
     var city: String
     var joinDate: Date
     
+    // .cascade — якщо видалити юзера, всі його завдання (jobs) видаляться автоматично
+    @Relationship(deleteRule: .cascade) var jobs = [Job]()
+    
     init(name: String, city: String, joinDate: Date) {
         self.name = name
         self.city = city

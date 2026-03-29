@@ -50,18 +50,32 @@ struct ContentView: View {
                 
                 // Меню вибору сортування
                 Menu("Sort", systemImage: "arrow.up.arrow.down") {
+                    
                     Picker("Sort", selection: $sortOrder) {
-                        Text("Sort by Name")
-                            .tag([
-                                SortDescriptor(\User.name),
-                                SortDescriptor(\User.joinDate)
-                            ])
+                        HStack {
+                            Text("Sort by Name")
+                                .tag([
+                                    SortDescriptor(\User.name),
+                                    SortDescriptor(\User.joinDate)
+                                ])
+                            
+                            Spacer()
+                            
+                            Image(systemName: "person.circle.fill")
+                        }
                         
-                        Text("Sort by Join Date")
-                            .tag([
-                                SortDescriptor(\User.joinDate),
-                                SortDescriptor(\User.name)
-                            ])
+                        HStack {
+                            Text("Sort by Join Date")
+                                .tag([
+                                    SortDescriptor(\User.joinDate),
+                                    SortDescriptor(\User.name)
+                                ])
+                            
+                            Spacer()
+                            
+                            Image(systemName: "calendar.circle.fill")
+                        }
+
                     }
                 }
             }

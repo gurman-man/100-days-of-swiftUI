@@ -9,13 +9,29 @@ import SwiftData
 import SwiftUI
 
 struct UsersView: View {
+    @Environment(\.modelContext) var modelContext
+    
     // Масив користувачів, який SwiftData буде автоматично оновлювати
     @Query var users: [User]
     
     var body: some View {
         List(users) { user in
-            Text(user.name)
+            
+            HStack {
+                Text(user.name)
+                Spacer()
+                
+                // Виводимо кількість завдань, які належать цьому юзеру
+                Text(String(user.jobs.count))
+                    .fontWeight(.black)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(.blue)
+                    .foregroundStyle(.white)
+                    .clipShape(.capsule)
+            }
         }
+        .onAppear(perform: addSamples)
     }
     
     // Спеціальний ініціалізатор, який дозволяє змінювати фільтрацію та сортування "на льоту"
@@ -28,6 +44,19 @@ struct UsersView: View {
             filter: #Predicate<User> { user in user.joinDate >= minimumJoinDate },
             sort: sortOrder
         )
+    }
+    
+    func addSamples() {
+        let user1 = User(name: "Piper Chapman", city: "New York", joinDate: .now)
+        let job1 = Job(name: "Organize sock drawer", priority: 3)
+        let job2 = Job(name: "Make plans with Alex", priority: 4)
+        
+        modelContext.insert(user1)
+        
+        // Зв'язуємо об'єкти: просто додаємо завдання в масив користувача
+        // SwiftData сама зрозуміє, що user1 тепер є owner для job1 та job2
+        user1.jobs.append(job1)
+        user1.jobs.append(job2)
     }
 }
 
