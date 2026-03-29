@@ -12,19 +12,18 @@ struct ContentView: View {
     // modelContext — це "робоча область", через яку ми додаємо/видаляємо дані
     @Environment(\.modelContext) var modelContext
     
-    // @Query автоматично оновлює список при будь-яких змінах у базі даних
-    // Макрос #Predicate перетворює твій код Swift на запит, який зрозуміє база даних
-    @Query(filter: #Predicate<User> { user in
-        // localizedStandardContains — розумний пошук (ігнорує регістр: "R" == "r")
-        user.name.localizedStandardContains("R") &&
-        user.city == "London"
-    }, sort: \User.name) var users: [User]
+    // Стан для фільтрації (тільки майбутні чи всі)
+    @State private var showingUpcomingOnly = false
+    
+    // Стан для сортування (за замовчуванням: Ім'я, потім Дата)
+    @State private var sortOrder = [
+        SortDescriptor(\User.name),
+        SortDescriptor(\User.joinDate)
+    ]
     
     var body: some View {
         NavigationStack {
-            List(users) { user in
-                Text(user.name)
-            }
+            UsersView(minimumJoinDate: showingUpcomingOnly ? .now : .distantPast, sortOrder: sortOrder)
             .navigationTitle("Users")
             .toolbar {
                 Button("Add Samples", systemImage: "plus") {
@@ -42,6 +41,28 @@ struct ContentView: View {
                     modelContext.insert(second)
                     modelContext.insert(third)
                     modelContext.insert(fourth)
+                }
+                
+                // Перемикач фільтрації
+                Button(showingUpcomingOnly ? "Show Everyone" : "Show Upcoming") {
+                    showingUpcomingOnly.toggle()
+                }
+                
+                // Меню вибору сортування
+                Menu("Sort", systemImage: "arrow.up.arrow.down") {
+                    Picker("Sort", selection: $sortOrder) {
+                        Text("Sort by Name")
+                            .tag([
+                                SortDescriptor(\User.name),
+                                SortDescriptor(\User.joinDate)
+                            ])
+                        
+                        Text("Sort by Join Date")
+                            .tag([
+                                SortDescriptor(\User.joinDate),
+                                SortDescriptor(\User.name)
+                            ])
+                    }
                 }
             }
         }
