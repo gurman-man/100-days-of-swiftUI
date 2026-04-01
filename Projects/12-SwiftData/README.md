@@ -47,7 +47,7 @@
 
 ## Challenges
 
-*Instructions taken from [here](https://www.hackingwithswift.com/books/ios-swiftui/bookworm-wrap-up)    
+*Instructions taken from [here](https://www.hackingwithswift.com/books/ios-swiftui/swiftdata-wrap-up)    
 All three of these challenges relate to upgrading [project 7](https://github.com/gurman-man/100-days-of-swiftUI/tree/main/Projects/07-iExpense) to SwiftData  
 You can find the modified project here: [iExpense-SwiftData](https://github.com/gurman-man/100-days-of-swiftUI/tree/main/Projects/12-SwiftData/07-iExpense-SwiftData)*
 
