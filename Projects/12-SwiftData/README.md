@@ -47,14 +47,19 @@
 
 ## Challenges
 
-*Instructions taken from [here](https://www.hackingwithswift.com/books/ios-swiftui/swiftdata-wrap-up)*  
-*All three of these challenges relate to upgrading project 7, [iExpense](https://github.com/gurman-man/100-days-of-swiftUI/Projects/12-SwiftData/07-iExpense-SwiftData)*:
+*Instructions taken from [here](https://www.hackingwithswift.com/books/ios-swiftui/bookworm-wrap-up)    
+All three of these challenges relate to upgrading [project 7](https://github.com/gurman-man/100-days-of-swiftUI/tree/main/Projects/07-iExpense) to SwiftData  
+You can find the modified project here: [iExpense-SwiftData](https://github.com/gurman-man/100-days-of-swiftUI/tree/main/Projects/12-SwiftData/07-iExpense-SwiftData)*
+
+<div align="center">
 
 | <div align="center">Challenge</div> | <div align="center">Status</div> |
-|:---|:---:|
+| :--- | :---: |
 | 1. Start by upgrading it to use SwiftData. | ✅ |
 | 2. Add a customizable sort order option: by name or by amount. | ✅ |
 | 3. Add a filter option to show all expenses, just personal expenses, or just business expenses. | ✅ |
+
+</div>
 
 ---
 
