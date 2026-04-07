@@ -8,14 +8,36 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var users = [User]()
+    @State private var manager = NetworkManager()
+    
+    @State private var errorMessage = ""
+    @State private var showingError = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List(users) { user in
+                Text(user.name)
+            }
+            .navigationTitle("FriendFace")
+            .task {
+                guard users.isEmpty else { return }
+                
+                do {
+                    let fetchedUsers = try await manager.loadData()
+                    users = fetchedUsers // Оновлюємо наш стан
+                } catch {
+                    errorMessage = error.localizedDescription
+                    showingError = true
+                }
+            }
+            .alert("Downloading error", isPresented: $showingError) {
+                Button("OK") { }
+            } message: {
+                Text(errorMessage)
+            }
         }
-        .padding()
     }
 }
 
