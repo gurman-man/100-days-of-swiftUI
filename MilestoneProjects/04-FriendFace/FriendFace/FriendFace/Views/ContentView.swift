@@ -23,9 +23,9 @@ struct ContentView: View {
                     HStack(spacing: 20) {
                         // 1. Статус індикатор
                         Circle()
-                            .fill(user.isActive ? .green : .secondary)
+                            .fill(user.isActive ? .blue : .secondary)
                             .strokeBorder(.ultraThickMaterial)
-                            .shadow(color: user.isActive ? .green : .clear ,radius: 2)
+                            .shadow(color: user.isActive ? .blue : .clear ,radius: 2)
                             .frame(width: 25, height: 25)
                         
                         VStack (alignment: .leading, spacing: 5) {
@@ -44,10 +44,20 @@ struct ContentView: View {
                         }
                     }
                 }
+                .cardStyle(material: AnyShapeStyle(.ultraThickMaterial), shadowColor: .blue.opacity(0.5))
             }
             .navigationTitle("FriendFace")
+            .scrollContentBackground(.hidden)
+            .background(
+                LinearGradient(
+                        colors: [Color.blue.opacity(0.4), Color.purple.opacity(0.3), .clear],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .ignoresSafeArea()
+            )
             .navigationDestination(for: User.self) { user in
-                Text("Detail for\n\(user.name)").bold()
+                DetailView(user: user)
             }
             .task {
                 guard users.isEmpty else { return }
