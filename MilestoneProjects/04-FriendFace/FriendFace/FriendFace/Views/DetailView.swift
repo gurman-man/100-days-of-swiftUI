@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - View Modifiers
+
 struct CardBackground: ViewModifier {
     var material: AnyShapeStyle
     var shadowColor: Color // Додаємо параметр для кольору тіні
@@ -34,44 +36,27 @@ extension View {
     }
 }
 
-struct ContactRow: View {
-    let icon: String
-    let label: String
-    let value: String
-    
-    var body: some View {
-        HStack (spacing: 20) {
-            Image(systemName: icon)
-                .foregroundColor(.blue)
-                .frame(width: 20)
-            
-            VStack(alignment: .leading) {
-                Text(label).font(.caption).foregroundStyle(.secondary)
-                Text(value).font(.body)
-            }
-        }
-    }
-}
+// MARK: - Main View
 
 struct DetailView: View {
     let user: User
-    
     @State private var isAboutExpanded = false
+    
+    // Динамічний колір залежно від статусу
+    private var themeColor: Color {
+        user.isActive ? .blue : .secondary
+    }
     
     var body: some View {
         List {
-            
-            // 1. Хедер з аватаркою та основним статусом
             headerSection
-                .cardStyle(shadowColor: statusColor)
-            
-            
-            // Секція Про себе
+                .cardStyle(shadowColor: themeColor)
+    
             aboutSection
-                .cardStyle(material: AnyShapeStyle(.thinMaterial), shadowColor: statusColor)
+                .cardStyle(material: AnyShapeStyle(.thinMaterial), shadowColor: themeColor)
             
             contactsSection
-                .cardStyle(material: AnyShapeStyle(.thickMaterial), shadowColor: statusColor)
+                .cardStyle(material: AnyShapeStyle(.thickMaterial), shadowColor: themeColor)
             
             friendsSection
             
@@ -80,22 +65,20 @@ struct DetailView: View {
         .navigationTitle("\(user.name)")
         .navigationBarTitleDisplayMode(.inline)
         .scrollContentBackground(.hidden) // Дозволяє бачити фон за списком: наш градієнт
-        .background(
-            LinearGradient(
-                    colors: [Color.blue.opacity(0.4), Color.purple.opacity(0.3), .clear],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-        )
+        .background(BackgroundGradientView())
     }
+}
+
+
+// MARK: - Subviews Extension
+
+private extension DetailView {
     
     private var headerSection: some View {
         Section {
             VStack(spacing: 15) {
-                
                 HStack(spacing: 20) {
-                    avatarView
+                    AvatarView(isActive: user.isActive, color: themeColor)
                     
                     VStack (alignment: .leading, spacing: 10) {
                         Text(user.name)
@@ -107,7 +90,7 @@ struct DetailView: View {
                             Text("\(user.age) years old")
                             Text("•")
                             Text(user.isActive ? "Online" : "Offline")
-                                .foregroundStyle(statusColor)
+                                .foregroundStyle(themeColor)
                             Text("•")
                         }
                         .font(.subheadline)
@@ -123,77 +106,52 @@ struct DetailView: View {
                 }
             }
             .padding()
-            
         }
     }
     
-    private var avatarView: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Image(systemName: "person.crop.circle.fill")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .foregroundStyle(.black.gradient.opacity(0.7))
-            
-            Circle()
-                .fill(statusColor)
-                .frame(width: 25, height: 25)
-                .overlay(Circle().stroke(.black, lineWidth: 4))
-        }
-    }
     
     private var aboutSection: some View {
         Section("About") {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(user.about)
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .lineLimit(isAboutExpanded ? nil : 3)
                 
-                Button {
-                    withAnimation(.spring()) {
-                        isAboutExpanded.toggle()
-                    }
-                } label: {
-                    HStack {
-                        Text(isAboutExpanded ? "Less" : "Show more")
-                        Image(systemName: isAboutExpanded ? "chevron.up" : "chevron.down")
-                    }
-                    .font(.caption.bold())
-                }
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.top, 5)
+                ExpandButton(isExpanded: $isAboutExpanded, color: themeColor)
             }
             .padding()
         }
     }
+    
     
     private var contactsSection: some View {
         Section("Contacts") {
             VStack(alignment: .leading, spacing: 12) {
                 ContactRow(icon: "building.2.fill", label: "Company", value: user.company)
                 Divider()
-                
                 ContactRow(icon: "envelope.fill", label: "Email", value: user.email)
                 Divider()
-                
                 ContactRow(icon: "mappin.and.ellipse", label: "Address", value: user.address)
             }
             .padding()
         }
     }
     
+    
     private var friendsSection: some View {
         Section("Friends") {
             ForEach(user.friends) { friend in
                 HStack {
                     Image(systemName: "person.crop.circle")
-                        .foregroundStyle(statusColor)
+                        .foregroundStyle(.blue)
                     Text(friend.name)
                 }
                 .padding(.vertical, 4)
             }
         }
     }
+    
     
     private var userTags: some View {
         Section ("Tags") {
@@ -214,10 +172,77 @@ struct DetailView: View {
             }
         }
     }
+
+}
+
+
+// MARK: - Extracted Components
+
+struct AvatarView: View {
+    let isActive: Bool
+    let color: Color
     
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Image(systemName: "person.crop.circle.fill")
+                .resizable()
+                .frame(width: 100, height: 100)
+                .foregroundStyle(.black.gradient.opacity(0.7))
+            
+            Circle()
+                .fill(color)
+                .frame(width: 25, height: 25)
+                .overlay(Circle().stroke(.black.opacity(0.9), lineWidth: 4))
+        }
+    }
+}
+
+struct ContactRow: View {
+    let icon: String
+    let label: String
+    let value: String
     
-    private var statusColor: Color {
-        user.isActive ? .blue : .secondary
+    var body: some View {
+        HStack (spacing: 20) {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+                .frame(width: 20)
+            
+            VStack(alignment: .leading) {
+                Text(label).font(.caption).foregroundStyle(.secondary)
+                Text(value).font(.body)
+            }
+        }
+    }
+}
+
+struct ExpandButton: View {
+    @Binding var isExpanded: Bool
+    let color: Color
+    
+    var body: some View {
+        Button {
+            withAnimation(.spring()) { isExpanded.toggle() }
+        } label: {
+            HStack {
+                Text(isExpanded ? "Less" : "Show more")
+                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+            }
+            .font(.caption.bold())
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .padding(.top, 5)
+    }
+}
+
+struct BackgroundGradientView: View {
+    var body: some View {
+        LinearGradient(
+            colors: [Color.blue.opacity(0.4), Color.purple.opacity(0.3), .clear],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea()
     }
 }
 
