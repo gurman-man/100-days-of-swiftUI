@@ -258,9 +258,7 @@ struct BackgroundGradientView: View {
         about: "Aspiring iOS Developer learning SwiftUI.",
         registered: .now,
         tags: ["Swift", "SwiftUI", "iOS"],
-        friends: [
-            User.Friend(id: "2", name: "Oleh"),
-            User.Friend(id: "3", name: "Iryna")
-        ]
+        friends: []
     ))
+    .modelContainer(for: User.self, inMemory: true)
 }

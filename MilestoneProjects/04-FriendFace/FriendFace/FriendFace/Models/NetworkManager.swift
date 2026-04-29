@@ -43,7 +43,7 @@ struct NetworkManager {
         
         // 3. Decode
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .iso8601 // Це навчить Swift розуміти формат дати з твого JSON
         
         do {
             // Намагаємося перетворити JSON на об'єкти Swift
