@@ -5,58 +5,52 @@
 //  Created by mac on 18.04.2026.
 //
 
-import PhotosUI // Фреймворк, для роботи з системним вікном вибору фото
 import SwiftUI
 
 struct ContentView: View {
-    // Це не саме зображення, а масив "посилань" на вибрані фото
-    @State private var pickerItems = [PhotosPickerItem]()
-    
-    // Масив готових SwiftUI зображень для відображення на екрані
-    @State private var selectedImages = [Image]()
-    
     var body: some View {
-        VStack {
-            // Конфігурація пікера
-            PhotosPicker(
-                selection: $pickerItems,
-                maxSelectionCount: 5, // Обмежуємо вибір до 5 елементів
-                matching: .any(of: [.images, .not(.screenshots)]) // Фільтр: фото, але не скріншоти
-            ) {
-                // Кастомізація зовнішнього вигляду кнопки
-                Label("Select a picture", systemImage: "photo")
+        List {
+            // Базовий варіант (текст "Share" + іконка)
+            Section("Default Share") {
+                ShareLink(item: URL(string: "https://www.hackingwithswift.com")!)
             }
             
-            // Відображення вибраних зображень
-            ScrollView {
-                ForEach(0..<selectedImages.count, id: \.self) { i in
-                    selectedImages[i]
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: .infinity)
-                        .cornerRadius(10)
-                        .padding(.horizontal)
+            
+            // З додаванням теми (subject) та опису (message)
+            Section("Share with Metadata") {
+                ShareLink(item: URL(
+                    string: "https://www.hackingwithswift.com")!,
+                          subject: Text("Learn Swift here"),
+                          message: Text("Check out the 100 Days of SwiftUI")
+                )
+            }
+            
+            // З кастомним виглядом кнопки
+            Section("Custom Label") {
+                ShareLink(item: URL(string: "https://www.hackingwithswift.com")!) {
+                    Label("Spread the word about Swift", systemImage: "swift")
                 }
             }
-        }
-        // Відстежуємо зміну pickerItems (коли користувач натиснув "Done")
-        .onChange(of: pickerItems) {
-            Task {
-                // Очищаємо попередні фото перед новим завантаженням
-                selectedImages.removeAll()
+            
+            
+            // Поширення фото (потребує обов'язкове прев'ю)
+            Section("Media Sharing") {
+                let example = Image(.skating)
                 
-                // Перебираємо всі вибрані "посилання"
-                for item in pickerItems {
-                    // Асинхронно намагаємось завантажити дані як Image
-                    if let loadedImage = try await item.loadTransferable(type: Image.self) {
-                        selectedImages.append(loadedImage)
-                    }
+                ShareLink(
+                    item: example,
+                    preview: SharePreview("Skating photo", image: example)
+                ) {
+                    Label("Click to share", systemImage: "skateboard.fill")
                 }
             }
         }
+        .listStyle(.insetGrouped)
     }
 }
 
 #Preview {
     ContentView()
 }
+
+
