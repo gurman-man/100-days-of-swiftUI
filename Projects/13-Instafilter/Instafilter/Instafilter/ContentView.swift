@@ -5,30 +5,49 @@
 //  Created by mac on 18.04.2026.
 //
 
-import StoreKit // Фреймворк для роботи з App Store (відгуки, покупки)
 import SwiftUI
 
 struct ContentView: View {
-    // Читаємо системний метод для виклику вікна оцінки
-    @Environment(\.requestReview) var requestReview
     
-    // Зберігаємо кількість дій у пам'ять телефону (не зникає після перезапуску)
-    @AppStorage("processCount") var processCount = 0
+    @State private var processedImage: Image?
+    @State private var filterIntensity = 0.5
     
     var body: some View {
-        VStack {
-            Button("Leave a review") {
-                // Викликаємо
-                reviewAction()
+        NavigationStack {
+            VStack {
+                Spacer()
+                
+                if let processedImage {
+                    processedImage
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    ContentUnavailableView("No Picture", systemImage: "photo.badge.plus", description: Text("Tap to import a photo"))
+                }
+                
+                Spacer()
+                
+                HStack {
+                    Text("Intensity")
+                    Slider(value: $filterIntensity)
+                }
+                .padding(.vertical)
+                
+                HStack {
+                    Button("Change Filter", action: changeFilter)
+                    
+                    Spacer()
+                    
+                    // share the picture
+                }
             }
+            .padding([.horizontal, .bottom])
+            .navigationTitle("Instafilter")
         }
     }
     
-    func reviewAction() {
-        processCount += 1
-        if processCount >= 5 {
-            requestReview() // Просимо відгук, коли юзер вже "втягнувся"
-        }
+    func changeFilter() {
+        
     }
 }
 
