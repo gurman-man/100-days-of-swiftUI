@@ -7,6 +7,7 @@
 
 import CoreImage // Базові інструменти для роботи з зображеннями
 import CoreImage.CIFilterBuiltins // Готові вбудовані фільтри (Sepia, Bloom тощо)
+import StoreKit // Фреймворк для роботи з App Store (відгуки, покупки)
 import PhotosUI
 import SwiftUI
 
@@ -18,10 +19,14 @@ struct ContentView: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var showingFilters = false
     
+    @AppStorage("filterCount") var filterCount = 0
+    @Environment(\.requestReview) var requestReview
+    
     @State private var currentFilter: CIFilter = CIFilter.sepiaTone()
     
     // Контекст (об'єкт, що "малює" картинку). Створюємо один раз
     let context = CIContext()
+    
     
     var body: some View {
         NavigationStack {
@@ -54,7 +59,9 @@ struct ContentView: View {
                     
                     Spacer()
                     
-                    // share the picture
+                    if let processedImage {
+                        ShareLink(item: processedImage, preview: SharePreview("Instafilter image", image: processedImage))
+                    }
                 }
             }
             .padding([.horizontal, .bottom])
@@ -122,9 +129,15 @@ struct ContentView: View {
     
     
     // Шаблон для оновлення стану
-    func setFilter(_ filter: CIFilter) {
+    // @MainActor гарантує безпечне оновлення UI та виклик системних вікон
+    @MainActor func setFilter(_ filter: CIFilter) {
         currentFilter = filter
         loadImage() // Перезавантажуємо картинку
+        
+        filterCount += 1
+        if filterCount >= 20 {
+            requestReview() // Просимо відгук лише після 20 замін фільтрів
+        }
     }
 }
 
