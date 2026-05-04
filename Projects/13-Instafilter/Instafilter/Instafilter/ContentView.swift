@@ -16,8 +16,9 @@ struct ContentView: View {
     @State private var filterIntensity = 0.5
     
     @State private var selectedItem: PhotosPickerItem?
+    @State private var showingFilters = false
     
-    @State private var currentFilter = CIFilter.sepiaTone()
+    @State private var currentFilter: CIFilter = CIFilter.sepiaTone()
     
     // Контекст (об'єкт, що "малює" картинку). Створюємо один раз
     let context = CIContext()
@@ -58,11 +59,21 @@ struct ContentView: View {
             }
             .padding([.horizontal, .bottom])
             .navigationTitle("Instafilter")
+            .confirmationDialog("Select a filter", isPresented: $showingFilters) {
+                Button("Crystallize") { setFilter(CIFilter.crystallize()) }
+                Button("Edges") { setFilter(CIFilter.edges()) }
+                Button("Gaussian Blur") { setFilter(CIFilter.gaussianBlur()) }
+                Button("Pixellate") { setFilter(CIFilter.pixellate()) }
+                Button("Sepia Tone") { setFilter(CIFilter.sepiaTone()) }
+                Button("Unsharp Mask") { setFilter(CIFilter.unsharpMask()) }
+                Button("Vignette") { setFilter(CIFilter.vignette()) }
+                Button("Cancel", role: .cancel) { }
+            }
         }
     }
     
     func changeFilter() {
-        
+        showingFilters = true
     }
     
     func loadImage() {
@@ -84,9 +95,19 @@ struct ContentView: View {
         }
     }
     
+    
+    // Безпечне налаштування фільтра через Ключі
     func applyProcessing() {
+        let inputKeys = currentFilter.inputKeys
+        
         // Налаштовуємо інтенсивність
-        currentFilter.intensity = Float(filterIntensity)
+        if inputKeys.contains(kCIInputIntensityKey) { currentFilter.setValue(filterIntensity, forKey: kCIInputIntensityKey) }
+        
+        // Налаштовуємо радіус
+        if inputKeys.contains(kCIInputRadiusKey) { currentFilter.setValue(filterIntensity * 200, forKey: kCIInputRadiusKey) }
+        
+        // Налаштовуємо масштабування
+        if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(filterIntensity  * 10, forKey: kCIInputScaleKey)}
         
         // Отримуємо результат від фільтра (це ще не картинка, а лише "рецепт")
         guard let outputImage = currentFilter.outputImage else { return }
@@ -97,6 +118,13 @@ struct ContentView: View {
         // Конвертуємо назад: CGImage -> UIImage -> SwiftUI Image
         let uiImage = UIImage(cgImage: cgImage)
         processedImage = Image(uiImage: uiImage)
+    }
+    
+    
+    // Шаблон для оновлення стану
+    func setFilter(_ filter: CIFilter) {
+        currentFilter = filter
+        loadImage() // Перезавантажуємо картинку
     }
 }
 
