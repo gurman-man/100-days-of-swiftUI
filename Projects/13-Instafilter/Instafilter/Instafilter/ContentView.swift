@@ -4,6 +4,15 @@
 //
 //  Created by mac on 18.04.2026.
 //
+// MARK: - Challenges - Day67
+
+/*
+    1. Try making the Slider and Change Filter buttons disabled if there is no image selected.
+ 
+    2. Experiment with having more than one slider, to control each of the input keys you care about. For example, you might have one for radius and one for intensity.
+ 
+    3. Explore the range of available Core Image filters, and add any three of your choosing to the app.
+ */
 
 import CoreImage // Базові інструменти для роботи з зображеннями
 import CoreImage.CIFilterBuiltins // Готові вбудовані фільтри (Sepia, Bloom тощо)
@@ -15,6 +24,9 @@ struct ContentView: View {
     
     @State private var processedImage: Image? // Зображення після фільтрації
     @State private var filterIntensity = 0.5
+    @State private var filterRadius = 0.5
+    @State private var filterScale = 0.5
+    @State private var filterVector = 0.5
     
     @State private var selectedItem: PhotosPickerItem?
     @State private var showingFilters = false
@@ -47,15 +59,46 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                HStack {
-                    Text("Intensity")
-                    Slider(value: $filterIntensity)
-                        .onChange(of: filterIntensity, applyProcessing) // Оновлюємо фільтр при русі слайдера
+                VStack(spacing: 20) {
+                    HStack {
+                        Text("Intensity")
+                        Slider(value: $filterIntensity)
+                            // Оновлюємо фільтр при русі слайдера
+                            .onChange(of: filterIntensity, applyProcessing)
+                            // Вимикаємо слайдер, якщо фільтр не підтримує Intensity ключа
+                            .disabled(!currentFilter.inputKeys.contains(kCIInputIntensityKey))
+                    }
+                    
+                    HStack {
+                        // Challenge 2
+                        Text("Radius")
+                        Slider(value: $filterRadius)
+                            .onChange(of: filterRadius, applyProcessing)
+                            .disabled(!currentFilter.inputKeys.contains(kCIInputRadiusKey))
+                    }
+                    
+                    HStack {
+                        // Challenge 2
+                        Text("Scale")
+                        Slider(value: $filterScale)
+                            .onChange(of: filterScale, applyProcessing)
+                            .disabled(!currentFilter.inputKeys.contains(kCIInputScaleKey))
+                    }
+                    
+                    HStack {
+                        // Challenge 3
+                        Text("Vector")
+                        Slider(value: $filterVector)
+                            .onChange(of: filterVector, applyProcessing)
+                            .disabled(!(currentFilter.inputKeys.contains("inputMaxComponents") || currentFilter.inputKeys.contains("inputMinComponents")))
+                    }
                 }
                 .padding(.vertical)
+                .disabled(selectedItem == nil) // Challenge 1
                 
                 HStack {
                     Button("Change Filter", action: changeFilter)
+                        .disabled(selectedItem == nil) // Challenge 1
                     
                     Spacer()
                     
@@ -74,6 +117,9 @@ struct ContentView: View {
                 Button("Sepia Tone") { setFilter(CIFilter.sepiaTone()) }
                 Button("Unsharp Mask") { setFilter(CIFilter.unsharpMask()) }
                 Button("Vignette") { setFilter(CIFilter.vignette()) }
+                Button("Gloom") { setFilter(CIFilter.gloom()) }
+                Button("Color Clamp") { setFilter(CIFilter.colorClamp()) }
+                Button("Effect Mono") { setFilter(CIFilter.photoEffectMono()) }
                 Button("Cancel", role: .cancel) { }
             }
         }
@@ -111,18 +157,32 @@ struct ContentView: View {
         if inputKeys.contains(kCIInputIntensityKey) { currentFilter.setValue(filterIntensity, forKey: kCIInputIntensityKey) }
         
         // Налаштовуємо радіус
-        if inputKeys.contains(kCIInputRadiusKey) { currentFilter.setValue(filterIntensity * 200, forKey: kCIInputRadiusKey) }
+        if inputKeys.contains(kCIInputRadiusKey) { currentFilter.setValue(filterRadius * 100, forKey: kCIInputRadiusKey) }
         
         // Налаштовуємо масштабування
-        if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(filterIntensity  * 10, forKey: kCIInputScaleKey)}
+        if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(filterScale  * 10, forKey: kCIInputScaleKey)}
+        
+        // Challenge 3
+        // Кастомні параметри для Color Clamp
+        if inputKeys.contains("inputMaxComponents") {
+            // Створюємо вектор, де кожен канал (R, G, B, A) обмежений значенням слайдера
+            let maxVector = CIVector(x: filterVector, y: filterVector, z: filterVector, w: 1)
+            currentFilter.setValue(maxVector, forKey: "inputMaxComponents")}
+        
+        if inputKeys.contains("inputMinComponents") {
+            // Створюємо вектор, де кожен канал (R, G, B, A) обмежений значенням слайдера
+            let maxVector = CIVector(x: 0, y: 0, z: 0, w: 0)
+            currentFilter.setValue(maxVector, forKey: "inputMinComponents")}
+        
         
         // Отримуємо результат від фільтра (це ще не картинка, а лише "рецепт")
         guard let outputImage = currentFilter.outputImage else { return }
         
         // Рендеримо (малюємо) рецепт у реальні пікселі (CGImage)
+        // Cтворюємо CGImage з CIImage
         guard let cgImage = context.createCGImage(outputImage, from: outputImage.extent) else { return }
     
-        // Конвертуємо назад: CGImage -> UIImage -> SwiftUI Image
+        // Cтворюємо UIImage з CGImage
         let uiImage = UIImage(cgImage: cgImage)
         processedImage = Image(uiImage: uiImage)
     }
