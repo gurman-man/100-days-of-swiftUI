@@ -7,29 +7,30 @@
 
 import SwiftUI
 
-struct User: Identifiable, Comparable {
-    // Функція для Comparable: визначає логіку "менше ніж" (<)
-    static func < (lhs: User, rhs: User) -> Bool {
-        lhs.lastName < rhs.lastName
-    }
-    
-    let id = UUID()
-    var firstName: String
-    var lastName: String
-}
-
 struct ContentView: View {
-    // Завдяки Comparable ми можемо просто викликати .sorted() в кінці масиву
-    // Swift автоматично використає функцію < , яку ми описали вище
-    let users = [
-        User(firstName: "Arnold", lastName: "Rimmer"),
-        User(firstName: "Kristine", lastName: "Kochanski"),
-        User(firstName: "David", lastName: "Lister")
-    ].sorted()
-    
     var body: some View {
-        List(users) { user in
-            Text("\(user.lastName), \(user.firstName)")
+        Button("Read and Write") {
+            // 1. Перетворюємо рядок у набір байтів (Data) через кодування UTF-8
+            let data = Data("Test Message".utf8)
+            
+            // 2. Отримуємо шлях до папки Documents нашого додатка
+            // та додаємо назву файлу "message.txt"
+            let url = URL.documentsDirectory.appending(path: "message.txt")
+            
+            do {
+                // 3. Записуємо дані за вказаною адресою
+                // .atomic — щоб файл не пошкодився при невдалому записі
+                // .completeFileProtection — щоб зашифрувати файл на диску
+                try data.write(to: url, options: [.atomic, .completeFileProtection])
+                
+                // 4. Читаємо дані назад із того самого файлу
+                let input = try String(contentsOf: url, encoding: .utf8)
+                
+                // 5. Виводимо результат у консоль
+                print(input)
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
 }
