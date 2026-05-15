@@ -5,44 +5,43 @@
 //  Created by mac on 11.05.2026.
 //
 
-import LocalAuthentication
+import MapKit
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isUnlocked = false
+    @State private var locations = [Location]()
+    
+    let startPosition = MapCameraPosition.region(
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 56, longitude: -3),
+            span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
+        )
+    )
     
     var body: some View {
-        VStack {
-            // Змінюємо вигляд екрана залежно від стану авторизації
-            isUnlocked ? Text("Unlocked") : Text("Locked")
-        }
-        // Запускаємо перевірку відразу, як тільки з'являється View
-        .onAppear(perform: authenticate)
-    }
-    
-    func authenticate() {
-        let context = LAContext()
-        var error: NSError? // Сюди запишеться помилка, якщо біометрія недоступна
         
-        // Крок 1: Перевіряємо, чи взагалі на пристрої є Face ID/Touch ID і чи вони налаштовані
-        // .deviceOwnerAuthenticationWithBiometrics — перевірка саме пальцем/обличчям
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            
-            let reason = "We need to unlock your data." // Пояснення для Touch ID
-            
-            // Крок 2: Запускаємо процес сканування
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
-                
-                // Крок 3: Обробляємо результат (у фоновому потоці)
-                if success {
-                    // Все добре, оновлюємо UI
-                    isUnlocked = true
-                } else {
-                    // Користувач скасував або обличчя не розпізнано
+        // Обгортаємо у MapReader і використовуємо посередника (proxy), щоб перетворити "пікселі" у реальні географічні координати (широту / довготу)
+        MapReader { proxy in
+            Map(initialPosition: startPosition) {
+                // Створюємо маркери місць
+                ForEach(locations) { location in
+                    Marker(location.name, coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.logitude))
                 }
             }
-        } else {
-            // Крок 4: Біометрія не підтримується (наприклад, iPad 2 або заблоковано в налаштуваннях)
+            .mapStyle(.standard(elevation: .realistic))
+            .onTapGesture { position in
+                if let coordinate = proxy.convert(position, from: .local) {
+                    // місце, яке буде викликатися при тапі
+                    let newLocation = Location(
+                        id: UUID(),
+                        name: "New Location",
+                        description: "",
+                        latitude: coordinate.latitude,
+                        logitude: coordinate.longitude)
+                    
+                    locations.append(newLocation) // додаємо у наших масив місць
+                }
+            }
         }
     }
 }
