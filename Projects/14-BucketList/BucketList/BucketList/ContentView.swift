@@ -25,7 +25,14 @@ struct ContentView: View {
             Map(initialPosition: startPosition) {
                 // Створюємо маркери місць
                 ForEach(locations) { location in
-                    Marker(location.name, coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.logitude))
+                    Annotation(location.name, coordinate: location.coordinate) {
+                        Image(systemName: "star.circle")
+                            .resizable()
+                            .foregroundStyle(.red)
+                            .frame(width: 44, height: 44)
+                            .background(.white)
+                            .clipShape(.circle)
+                    }
                 }
             }
             .mapStyle(.standard(elevation: .realistic))
@@ -37,7 +44,7 @@ struct ContentView: View {
                         name: "New Location",
                         description: "",
                         latitude: coordinate.latitude,
-                        logitude: coordinate.longitude)
+                        longitude: coordinate.longitude)
                     
                     locations.append(newLocation) // додаємо у наших масив місць
                 }
