@@ -11,6 +11,9 @@ import SwiftUI
 struct ContentView: View {
     @State private var locations = [Location]()
     
+    // Опціональний стан: коли він стає не-nil, автоматично відкривається .sheet
+    @State private var selectedPlace: Location?
+    
     let startPosition = MapCameraPosition.region(
         MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 56, longitude: -3),
@@ -32,6 +35,13 @@ struct ContentView: View {
                             .frame(width: 44, height: 44)
                             .background(.white)
                             .clipShape(.circle)
+                            // Використовуємо високопріоритетний жест, щоб мапа не глушила довге натискання
+                            .highPriorityGesture(
+                                LongPressGesture(minimumDuration: 0.2)
+                                    .onEnded({ _ in
+                                        selectedPlace = location // Активує відкриття шіта
+                                    })
+                            )
                     }
                 }
             }
@@ -47,6 +57,15 @@ struct ContentView: View {
                         longitude: coordinate.longitude)
                     
                     locations.append(newLocation) // додаємо у наших масив місць
+                }
+            }
+            // Презентація шіта: передає розгорнуту (unwrapped) локацію в константу 'place'
+            .sheet(item: $selectedPlace) { place in
+                EditView(location: place) { newLocation in
+                    // Шукаємо індекс старої точки (place) і замінюємо її оновленою (newLocation)
+                    if let index = locations.firstIndex(of: place) {
+                        locations[index] = newLocation
+                    }
                 }
             }
         }

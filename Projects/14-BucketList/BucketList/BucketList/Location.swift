@@ -10,7 +10,7 @@ import MapKit
 // Модель даних для локації візиту
 // Codable — для збереження, Equatable — для порівняння, Identifiable — для списків/карт
 struct Location: Codable, Equatable, Identifiable {
-    let id: UUID
+    var id: UUID
     var name: String
     var description: String
     var latitude: Double
