@@ -8,19 +8,21 @@
 import SwiftUI
 
 struct EditView: View {
+    // Перелік усіх можливих станів завантаження для UI
     enum LoadingState {
         case loading, loaded, failed
     }
     
     @Environment(\.dismiss) var dismiss
-    var location: Location
+    var location: Location // Локація, яку редагуємо
     
     // Замикання (closure), яке викликається при натисканні "Save" та приймає оновлену локацію
     var onSave: (Location) -> Void
     
-    @State private var loadingState = LoadingState.loading // для відображення стану завантаження
-    @State private var pages = [Page]() // для зберігання сторінок з Wikipedia
+    @State private var loadingState = LoadingState.loading // Початковий стан — завантаження
+    @State private var pages = [Page]() // Масив для збереження отриманих сторінок
     
+    // Тимчасові стани для збереження тексту з текстових полів
     @State private var name: String
     @State private var description: String
     
@@ -28,22 +30,25 @@ struct EditView: View {
         NavigationStack {
             Form {
                 Section {
+                    // Секція для редагування назви та опису
                     TextField("Place name", text: $name)
                     TextField("Description", text: $description)
                 }
                 
+                // Секція для відображення цікавих місць поруч
                 Section("Nearby...") {
                     switch loadingState {
                     case .loading:
                        Text("Loading...")
                     case .loaded:
+                        // Виводимо знайдені сторінки Вікіпедії
                         ForEach(pages, id: \.pageid) { page in
                             Text(page.title)
                                 .font(.headline)
                             
-                            + Text(": ") + // використання + дозволить адаптуватися до різних типів форматування
+                            + Text(": ") // Оператор "+" склеює Text в один рядок із різними стилями
                             
-                            Text("Page description here")
+                            + Text(page.description)
                                 .italic()
                         }
                     case .failed:
@@ -54,6 +59,7 @@ struct EditView: View {
             .navigationTitle("Place Details")
             .toolbar {
                 Button("Save") {
+                    // Створюємо нову копію локації з новими даними та свіжим UUID (щоб оновити карту)
                     var newLocation = location
                     newLocation.id = UUID()
                     newLocation.name = name
@@ -63,7 +69,8 @@ struct EditView: View {
                     dismiss() // Закриваємо шіт
                 }
             }
-            .task { await fetchNearbyPlaces() } // виклик запиту у Wikipedia
+            // Викликаємо асинхронне завантаження місць при появі екрана
+            .task { await fetchNearbyPlaces() }
         }
     }
     
@@ -73,13 +80,14 @@ struct EditView: View {
         self.location = location
         self.onSave = onSave // зберігає назву та опис локації у пам'ять
         
-        // Використовуємо підкреслення, щоб налаштувати сам Property Wrapper
+        // Ініціалізація Property Wrappers через підкреслення (_name, _description)
         _name = State(initialValue: location.name)
         _description = State(initialValue: location.description)
     }
     
-    // Головна функція для отримання даних із Wikipedia
+    // Асинхронна функція для завантаження даних з Wikipedia
     func fetchNearbyPlaces() async {
+        // Формуємо URL-рядок, підставляючи координати поточної локації
         let urlString = "https://en.wikipedia.org/w/api.php?ggscoord=\(location.latitude)%7C\(location.longitude)&action=query&prop=coordinates%7Cpageimages%7Cpageterms&colimit=50&piprop=thumbnail&pithumbsize=500&pilimit=50&wbptterms=description&generator=geosearch&ggsradius=10000&ggslimit=50&format=json"
         
         guard let url = URL(string: urlString) else {
@@ -88,11 +96,14 @@ struct EditView: View {
         }
         
         do {
+            // Виконуємо мережевий запит
             let (data, _) = try await URLSession.shared.data(from: url)
+            
+            // Декодуємо отриманий JSON у наші структури
             let items = try JSONDecoder().decode(Result.self, from: data)
             
-            // Успіх - конвертуємо наші значення масиву у масив сторінок
-            pages = items.query.pages.values.sorted { $0.title < $1.title }
+            // Успіх - конвертуємо наші значення масиву у масив сторінок та сортуємо за алфавітом (завдяки Comparable)
+            pages = items.query.pages.values.sorted()
             loadingState = .loaded
         } catch {
             loadingState = .failed

@@ -17,9 +17,20 @@ struct Query: Codable {
     let pages: [Int: Page]
 }
 
-struct Page: Codable {
+// Модель сторінки. Conforming до Comparable дозволяє сортувати масив сторінок автоматично
+struct Page: Codable, Comparable {
     let pageid: Int
     let title: String
     let terms: [String: [String]]?
+    
+    // Обчислювальна властивість: безпечно дістає опис або повертає заглушку, якщо опису немає
+    var description: String {
+        terms?["description"]?.first ?? "No funther information"
+    }
+    
+    // Обов'язковий метод для протоколу Comparable: сортуємо сторінки за алфавітом (за назвою)
+    static func <(lhs: Page, rhs: Page) -> Bool {
+        lhs.title < rhs.title
+    }
 }
 
