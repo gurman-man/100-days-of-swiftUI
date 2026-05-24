@@ -5,6 +5,7 @@
 //  Created by mac on 23.05.2026.
 //
 
+import LocalAuthentication
 import CoreLocation
 import Foundation
 import MapKit
@@ -16,6 +17,8 @@ extension ContentView {
         
         // Опціональний стан: коли View присвоює сюди значення, автоматично відкривається .sheet
         var selectedPlace: Location?
+        
+        var isUnlocked = false
         
         // Шлях куди ми зберігаємо дані (весь наш JSON-масив)
         // Знаходить системний шлях до папки "Документи" на пристрої та додає в кінці назву нашого файлу "SavedPlaces"
@@ -75,6 +78,34 @@ extension ContentView {
             if let index = locations.firstIndex(of: selectedPlace) {
                 locations[index] = location
                 save()
+            }
+        }
+        
+        
+        // Метод для налаштування authentication користувача
+        func authenticate() {
+            
+            // Екземляр для запуску процесу сканування
+            let context = LAContext()
+            var error: NSError?
+            
+            // Крок 1: Перевіряємо, чи взагалі на пристрої є Face ID/Touch ID і чи вони налаштовані
+            // .deviceOwnerAuthenticationWithBiometrics — перевірка саме пальцем/обличчям
+            if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                let reason = "Please authenticate yourself to unlock your places."
+                
+                // Крок 2: Запускаємо процес сканування
+                context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
+                    
+                    // Крок 3: Обробляємо результат
+                    DispatchQueue.main.async {
+                        self.isUnlocked = success
+                        
+                        // Якщо успіху немає і повернулася якась помилка
+                    }
+                }
+            } else {
+                // Немає біометрії на пристрої (можна додати альтернативний вхід)
             }
         }
         
