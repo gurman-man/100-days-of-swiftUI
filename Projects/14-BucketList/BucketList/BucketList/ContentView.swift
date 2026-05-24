@@ -9,11 +9,6 @@ import MapKit
 import SwiftUI
 
 struct ContentView: View {
-    @State private var locations = [Location]()
-    
-    // Опціональний стан: коли він стає не-nil, автоматично відкривається .sheet
-    @State private var selectedPlace: Location?
-    
     let startPosition = MapCameraPosition.region(
         MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 56, longitude: -3),
@@ -21,13 +16,17 @@ struct ContentView: View {
         )
     )
     
+    // Головне джерело істини (стан та логіка) для цього екрана
+    // Завдяки розширенню (extension) тип автоматично розпізнається як ContentView.ViewModel
+    @State private var viewModel = ViewModel()
+    
     var body: some View {
         
         // Обгортаємо у MapReader і використовуємо посередника (proxy), щоб перетворити "пікселі" у реальні географічні координати (широту / довготу)
         MapReader { proxy in
             Map(initialPosition: startPosition) {
-                // Створюємо маркери місць
-                ForEach(locations) { location in
+                // Створюємо маркери місць з ViewModel
+                ForEach(viewModel.locations) { location in
                     Annotation(location.name, coordinate: location.coordinate) {
                         Image(systemName: "star.circle")
                             .resizable()
@@ -39,7 +38,7 @@ struct ContentView: View {
                             .highPriorityGesture(
                                 LongPressGesture(minimumDuration: 0.2)
                                     .onEnded({ _ in
-                                        selectedPlace = location // Активує відкриття шіта
+                                        viewModel.selectedPlace = location // Активує відкриття шіта
                                     })
                             )
                     }
@@ -49,23 +48,13 @@ struct ContentView: View {
             .onTapGesture { position in
                 if let coordinate = proxy.convert(position, from: .local) {
                     // місце, яке буде викликатися при тапі
-                    let newLocation = Location(
-                        id: UUID(),
-                        name: "New Location",
-                        description: "",
-                        latitude: coordinate.latitude,
-                        longitude: coordinate.longitude)
-                    
-                    locations.append(newLocation) // додаємо у наших масив місць
+                    viewModel.addLocation(at: coordinate)
                 }
             }
             // Презентація шіта: передає розгорнуту (unwrapped) локацію в константу 'place'
-            .sheet(item: $selectedPlace) { place in
-                EditView(location: place) { newLocation in
-                    // Шукаємо індекс старої точки (place) і замінюємо її оновленою (newLocation)
-                    if let index = locations.firstIndex(of: place) {
-                        locations[index] = newLocation
-                    }
+            .sheet(item: $viewModel.selectedPlace) { place in
+                EditView(location: place) {
+                    viewModel.update(location: $0)
                 }
             }
         }
