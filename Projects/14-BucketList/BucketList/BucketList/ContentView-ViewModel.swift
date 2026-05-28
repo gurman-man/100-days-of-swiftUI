@@ -13,10 +13,45 @@ import MapKit
 extension ContentView {
     @Observable
     class ViewModel {
+        enum AuthenticationError: Error, LocalizedError {
+            case biometryNotAvailable, biometryNotEnrolled, biometryLockout, authenticationFailed, unknownError
+            
+            // Створюємо ініціалізатор, який приймає системну LAError і сам себе мапить (зіставляє)!
+            init(from laError: LAError) {
+                switch laError.code {
+                case .biometryNotAvailable:     self = .biometryNotAvailable
+                case .biometryNotEnrolled:      self = .biometryNotEnrolled
+                case .biometryLockout:          self = .biometryLockout
+                case .authenticationFailed:     self = .authenticationFailed
+                default:                        self = .unknownError
+                }
+            }
+            
+            var errorDescription: String? {
+                switch self {
+                case .biometryNotAvailable: 
+                    return "Biometric authentication is not available on this device."
+                case .biometryNotEnrolled:
+                    return "Face ID / Touch ID is not set up. Please enable it in iPhone settings."
+                case .biometryLockout: 
+                    return "Too many failed attempts. Face ID / Touch ID is locked."
+                case .authenticationFailed:
+                    return "Biometric recognition failed. Please try again."
+                case .unknownError:
+                    return "Unknown error. Please try again later."
+                }
+            }
+        }
+        
         private(set) var locations: [Location] // "set" означає що записувати дані про місцезнаходження може лише клас (ViewModel)
         
         // Опціональний стан: коли View присвоює сюди значення, автоматично відкривається .sheet
         var selectedPlace: Location?
+        
+        var isHybridMap = false // стиль мапи за замовчуванням
+        
+        var showingError = false
+        var authError: AuthenticationError?
         
         var isUnlocked = false
         
@@ -84,7 +119,6 @@ extension ContentView {
         
         // Метод для налаштування authentication користувача
         func authenticate() {
-            
             // Екземляр для запуску процесу сканування
             let context = LAContext()
             var error: NSError?
@@ -99,13 +133,37 @@ extension ContentView {
                     
                     // Крок 3: Обробляємо результат
                     DispatchQueue.main.async {
-                        self.isUnlocked = success
+                        guard success else {
+                            // Якщо сталася помилка — фіксуємо її та показуємо алерт
+                            self.isUnlocked = false
+                            
+                            // Challenge 2
+                            if let laError = authenticationError as? LAError {
+                                // Ігноруємо випадок, коли користувач просто сам натиснув "Cancel"
+                                if laError.code == .userCancel { return }
+                                
+                                // Мапінг відбувається автоматично завядки init(from:)
+                                self.authError = AuthenticationError(from: laError)
+                                self.showingError = true
+                            }
+                            return
+                        }
                         
-                        // Якщо успіху немає і повернулася якась помилка
+                        // Якщо аутентифікація успішна — розблоковуємо додаток!
+                        self.isUnlocked = true
                     }
                 }
             } else {
                 // Немає біометрії на пристрої (можна додати альтернативний вхід)
+                DispatchQueue.main.async {
+                    // Challenge 2
+                    if let laError = error as? LAError, laError.code == .biometryNotEnrolled {
+                        self.authError = .biometryNotEnrolled
+                    } else {
+                        self.authError = .biometryNotAvailable
+                    }
+                    self.showingError = true
+                }
             }
         }
         
