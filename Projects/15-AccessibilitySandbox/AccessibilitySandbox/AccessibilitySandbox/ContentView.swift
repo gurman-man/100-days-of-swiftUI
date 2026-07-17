@@ -8,26 +8,40 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var value = 10
     var body: some View {
         VStack {
-            Image(.character)
-                .resizable()
-                .scaledToFit()
-                .accessibilityHidden(true) // повне ігнорування до будь-якого View
-        }
-        .frame(width: .infinity, height: 500)
-        .padding(.vertical)
-        
-        VStack {
-            Text("Your score is")
+            VStack {
+                Text("Value: \(value)")
+                
+                Button("Increment") {
+                    value += 1
+                }
+                
+                Button("Decrement") {
+                    value -= 1
+                }
+            }
             
-            Text("1000")
-                .font(.title)
+            // Об'єднує всі внутрішні елементи у один єдиний компонент для VoiceOver
+            .accessibilityElement()
+            
+            // Задає назву (контекст) для об'єднаного елемента
+            .accessibilityLabel("Value")
+            
+            // Передає поточне значення, яке VoiceOver озвучуватиме при зміні
+            .accessibilityValue(String(value))
+            
+            // Дозволяє змінювати значення свайпами вгору/вниз без натискання окремих кнопок
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment: value += 1
+                case .decrement: value -= 1
+                @unknown default: print("Not handled")
+                }
+            }
         }
-        // ігорується Text - та читається сам accessibilityLabel
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Your score is 1000")
-        .padding(.vertical)
     }
 }
 
