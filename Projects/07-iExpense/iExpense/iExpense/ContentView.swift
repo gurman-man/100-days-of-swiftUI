@@ -23,6 +23,12 @@
     2. Try changing project 7 so that it lets users edit their issue name in the navigation title rather than a separate textfield. Which option do you prefer?
 */
 
+// MARK: - Extra Challenge Accessibility - Day57
+
+/*
+    2. Fix the list rows in iExpense so they read out the name and value in one single VoiceOver label, and their type in a hint.
+*/
+
 
 // MARK: - Implementation
 
@@ -122,6 +128,10 @@ extension ContentView {
                 .foregroundStyle(color(for: item.amount))
                 .fontWeight(item.amount > 100 ? .bold : .regular)
         }
+        // Extra Challenge 2 - Day 57
+        .accessibilityElement()
+        .accessibilityLabel("\(item.name), \(item.amount.formatted(.currency(code: Locale.current.currency?.identifier ?? "UAH")))")
+        .accessibilityHint("\(item.type)")
     }
     
     // Challenge 3
