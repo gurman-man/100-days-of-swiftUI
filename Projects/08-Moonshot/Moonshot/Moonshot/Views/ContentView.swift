@@ -21,6 +21,12 @@
     3. Return to project 8 (Moonshot), and upgrade it to use NavigationLink(value:). This means adding Hashable conformance, and thinking carefully how to use navigationDestination().
 */
 
+// MARK: - Extra Challenge - Day76
+
+/*
+    3. Do a full accessibility review of Moonshot – what changes do you need to make so that it’s fully accessible?
+*/
+
 // MARK: - Impelementation
 
 import SwiftUI
@@ -63,6 +69,8 @@ struct ContentView: View {
                 } label: {
                     Image(systemName: showingGrid ? "list.bullet" : "square.grid.2x2")
                 }
+                // Extra Challenge - Day76
+                .accessibilityLabel(showingGrid ? "Switch to list view" : "Switch to grid view")
             }
         }
     }
@@ -111,6 +119,8 @@ struct SpaceFlightsGrid: View {
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(.lightBackground)
                     )
+                    // Extra Challenge - Day76
+                    .missionAccessibilityStyle(for: mission)
                 }
             }
         }
@@ -143,9 +153,21 @@ struct SpaceFlightsList: View {
                 }
             }
             .listRowBackground(Color.lightBackground)
+            // Extra Challenge - Day76
+            .missionAccessibilityStyle(for: mission)
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
+    }
+}
+
+extension View {
+    // Налаштування доступності для картки місії Moonshot
+    func missionAccessibilityStyle(for mission: Mission) -> some View {
+        self
+            .accessibilityElement()
+            .accessibilityLabel("\(mission.displayName), launched on \(mission.formattedLaunchDate)")
+            .accessibilityHint("Shows mission details and crew list")
     }
 }
 

@@ -63,6 +63,7 @@ struct MissionHeader: View {
             Image(mission.image)
                 .resizable()
                 .scaledToFit()
+                .accessibilityLabel("Official badge of the \(mission.displayName) mission")
                 .containerRelativeFrame(.horizontal) { width, axis in
                     width * 0.6
                 }
@@ -135,6 +136,8 @@ struct CrewList: View {
                         }
                         .padding(.horizontal)
                     }
+                    // Extra Challenge - Day76
+                    .crewAccessibilityStyle(for: crewMember)
                 }
             }
         }
@@ -149,6 +152,18 @@ extension View {
             .frame(height: 2)
             .foregroundStyle(.lightBackground)
             .padding(.vertical)
+            .accessibilityHidden(true) // Повністю ховаємо лінію від VoiceOver
+        
+    }
+}
+
+extension View {
+    // Налаштування доступності для екіпажу
+    func crewAccessibilityStyle(for member: MissionView.CrewMember) -> some View {
+        self
+            .accessibilityElement()
+            .accessibilityLabel("\(member.astronaut.name), role: \(member.role)")
+            .accessibilityHint("Shows astronaut biography")
     }
 }
 
