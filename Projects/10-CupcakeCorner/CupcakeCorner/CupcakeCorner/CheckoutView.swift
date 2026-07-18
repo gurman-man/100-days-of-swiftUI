@@ -41,6 +41,8 @@ struct CheckoutView: View {
                     ProgressView()
                 }
                 .frame(height: 233)
+                // Challenge 1 - Day 76
+                .accessibilityHidden(true)
                 
                 Text("Your total is \(order.cost, format: .currency(code: "USD"))")
                     .font(.title)

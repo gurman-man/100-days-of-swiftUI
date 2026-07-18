@@ -13,6 +13,12 @@
     3. For a more challenging task, try updating the Order class so it saves data such as the user's delivery address to UserDefaults. This takes a little thinking, because @AppStorage won't work here, and you'll find getters and setters cause problems with Codable support. Can you find a middle ground?
  */
 
+// MARK: - Accessibility_Challenge - Day57
+
+/*
+    1. The check out view in Cupcake Corner uses an image and loading spinner that don’t add anything to the UI, so find a way to make the screenreader not read them out.
+*/
+
 import SwiftUI
 
 struct ContentView: View {
